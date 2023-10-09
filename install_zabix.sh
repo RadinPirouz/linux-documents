@@ -18,9 +18,9 @@ sudo apt install wget gnupg lsb-release -y
 
 #Add zabix repo 
 
-wget https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1+$(lsb_release -sc)_all.deb
+wget https://repo.zabbix.com/zabbix/6.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.4-1+ubuntu$(lsb_release -sc)_all.deb
 
-sudo dpkg -i zabbix-release_5.4-1+$(lsb_release -sc)_all.deb
+sudo dpkg -i zabbix-release_6.4-1+${(lsb_release -sc)_all.deb
 
 sudo apt update 
 
