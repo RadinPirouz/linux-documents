@@ -245,7 +245,7 @@ $ sudo systemctl restart gunicorn
 $ sudo nano /etc/nginx/sites-available/myproject
 
 50.Inside, open up a new server block. You will start by specifying that this block should listen on the normal port 80 and that it should respond to your server’s domain name or IP address:
-
+```
 server {
     listen 80;
     server_name server_domain_or_IP;
@@ -260,7 +260,7 @@ server {
         proxy_pass http://unix:/run/gunicorn.sock;
     }
 }
-
+```
 51.Save and close the file when you are finished. Now, you can enable the file by linking it to the sites-enabled directory:
 $ sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
 
