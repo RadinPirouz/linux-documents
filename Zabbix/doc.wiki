@@ -1,0 +1,117 @@
+زبیکس یک نرم‌افزار متن اوپن سورس برای مانیتور شبکه‌ها و نرم‌افزارها در سطح سازمانی است، که توسط الکسی ولادیشو (به انگلیسی: Alexei Vladishev) ایجاد شده‌است. این نرم‌افزار برای مانیتور و تشخیص وضعیت سرویس‌های شبکه‌ها، سرورها و دیگر سخت افزارهای شبکه طراحی شده‌است.
+
+زبیکس از mysql، PostgreSQL، sqlite، Oracle و db2برای ذخیره داده‌ها پشتیبانی می‌کند. برنامه‌نویسی سمت سرور از زبان C بهره میبرد و برنامه‌نویسی سمت کاربری آن از زبان PHP استفاده می‌کند.
+
+== نحوه نصب ==
+
+=== نصب زبیکس ===
+
+==== نصب ریپازیتوری زبیکس ====
+(توجه کامند زیر برای هر سیستم و هر ورژن متفاوته و ما از ابونتو 22 استفاده میکنیم برای دیدن کامند های دیگر از این [https://www.zabbix.com/download?zabbix=6.4&os_distribution=ubuntu_arm64&os_version=20.04&components=server_frontend_agent&db=mysql&ws=apache لینک] استفاده کنید)
+
+با استفاده کامند زیر پکیج زپیکس دانلود میشود. 
+
+<code>wget https://repo.zabbix.com/zabbix/6.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.4-1+ubuntu22.04_all.deb</code>
+
+برای وریفای کردن دانلود از دستور ‍‍‍‍`ls` استفاده میشود.
+
+برای نصب از کامند های زیر استفاده کنید
+
+<code>sudo dpkg -i zabbix-release_6.4-1+ubuntu22.04_all.deb</code>
+
+<code>sudo apt update</code>
+
+==== نصب زبیکس از ریپازیتوری ====
+با کامند زیر زبیکس نصب میشد
+
+<code>sudo apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent</code>
+
+=== اتصال دیتابیس ===
+
+==== نصب دیتابیس ====
+<code>sudo apt install mysql-server</code>
+
+برای وریفای کردن دیتابیس از دستور زیر استفاده میکنیم
+
+<code>sudo service mysql status</code>
+
+برای ایمن کردن دیتابیس از دستور زیر استفاده کنید
+
+<code>sudo mysql_secure_installation</code>
+[[پرونده:./mysql.png|تنظیمات مای اسکیول|حاشیه|وسط|بی‌قاب|719x719پیکسل]]
+در تصویر بالا نحوه تنظیمات دیتابیس نمایش داده شده
+
+==== اتصال زبیکس به دیتابیس ====
+برای ساخت دیتابیس ابتدا دستور زیر را وارد میکنید
+
+<code>sudo mysql -uroot -p</code>
+
+سپس پسورد خود را وارد کنید و وارد شوید
+
+بعد از ورود به دیتابیس دستورات زیر را در دیتابیس خود وارد کنید
+
+ <span dir="ltr" lang="en">mysql> create database zabbix character set utf8mb4 collate utf8mb4_bin;
+ mysql> create user zabbix@localhost identified by 'password'; -- به جای پسورد رمز مورد نظر خود را وارد کنید 
+ mysql> grant all privileges on zabbix.* to zabbix@localhost;
+ mysql> set global log_bin_trust_function_creators = 1;
+ mysql> quit;</span>
+سپس دستور زیر را وارد کنید و پسوردی که در مرحله قبلی وارد کردید را وارد کنید
+
+<code>zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p zabbix</code>
+
+سپس دوباره با استفاده از دستور <code>sudo mysql -uroot -p</code> مجددا وارد دیتابیس شوید و دستورات زیر را وارد کنید
+ 
+ <span dir="ltr" lang="en">mysql> set global log_bin_trust_function_creators = 0;
+ mysql> quit;</span>
+با دستورات زیر فایل /etc/zabbix/zabbix_server.conf را بازکنید و در انتهای فایل <code>DBPassword=your password</code>را وارد کنید (به جای your password) پسوردای که برای زبیکس ساختید را وارد کنید
+
+ <span dir="ltr" lang="en">cd /etc/zabbix/</span>
+ sudo apt install vim
+ sudo vim zabbix_server.conf										
+درنهایت با دستورات زیر زبیکس را ری استارت کنیم
+ sudo systemctl restart zabbix-server zabbix-agent apache2
+ sudo systemctl enable zabbix-server zabbix-agent apache2 
+برای وارد شدن به زبیکس از دستور زیر استفاده کنید
+
+[http://localhost/zabbix/setup.php http://localhost/zabbix/]
+
+سپس گزینه next را بزنید و دوباره گزینه next را بزنید
+
+در قسمت passowrd پسورد زبیکس را وارد کنیدو نکست بزنید
+
+اسم سرور را به دلخواه انتخاب کنید و دوباره نکست بزنید
+
+دوباره نکست بزنید تا وارد صفحه لوگین شوید
+
+با یوزنیم Admin با A بزرگ و پسورد zabbix
+
+=== خطاهای احتمالی ===
+
+==== Locale for language "en_US" is not found on the web server. ====
+درصورت برخورد با این ارور کامند زیر را وارد کنید
+ sudo dpkg-reconfigure locales
+سپس در بین گزینه های موجود گزینه هایی که شامل en_US میشوند را پیدا کنید (به ترتیب الفباه که راحت بتونید پیدا کنید همش کنار همن) و با کلید space آنهارا انتخاب کنید
+
+سپس با استفاده از کلید tab گزینه <code><ok></code>در پایین را بزنید و مجددا همان گزینه را بزنید تا لوکال ها لود بشوند
+
+سپس با دستور زیر زبیکس را ری‌استارت کنید
+  sudo systemctl restart zabbix-server zabbix-agent apache2
+
+== محیط نرم افزار ==
+[[پرونده:Zabbix-dashboard.png|حاشیه|وسط|بی‌قاب|865x865پیکسل]]
+درصورت مشاهده این تصویر (من رنگ پس زمینه رو مشکی کردم که در ادامه روش اینکار را به شما یاد خواهم داد) 
+
+رم سی پی یو در قسمت شمال غربی تصویر ساعت  9 تا 10 و نیم بالا سمت چپ اولین آیتم از بالا و دومین سمت چپ به اسم top hosts by cpu utiliization است که zabbix سرور، کلاینتیه که زبیکس در آن قرار دارد میزان utilization میزان کارایی سی پی یو (میزان استفاده شده سی پی) را به درصد بیان میکند و همچنین قسمت های 1m avg میانگین رم سی پی یو در یک دیقه اخیر، 5m avg در پنج دیقه اخیر، و 15m در پانزده دیقه اخیر نشان میدهد
+
+در زیر قسمت سی پی یو و رم host availability قرار دارد که سرور های فعال، غیر فعال و نامشخص و تعداد کل به ترتیب چپ به راست را نشان میدهد
+
+در سمت راست هاست problems by severtiy قرار دارد که تعداد ارور های سرور را نشان میدهد
+
+در سمت راست پرابلمز geomap قرار دارد که یک لوکیشن در پایتخت لتونی یعنی ریگا را به شما نمایش میدهد و اگر خواستید میتونید به آنجا بروید و سازندگان این نرم افزار کاربردی را از نزدیک مشاهده کنید
+
+در قسمت system information اطلاعات سیستم قرار دارد
+
+ور در قسمت current problems ارور های فعلی
+
+برای عوض کردن بک گراند به لوکیشن زیر بروید (از طریق نوار سمت راست) و تم دلخواه خود را انتخاب کنید
+ administration > general > gui > default theme
