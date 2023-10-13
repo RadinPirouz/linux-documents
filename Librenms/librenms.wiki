@@ -1,0 +1,252 @@
+== مرحله اول: وب سرور لینوکسی ==
+
+لایبر ان‌ام‌اس (به انگلیسی: LibreNMS) یک سیستم نظارت بر شبکه مبتنی بر PHP/MySQL است که از Observium جعبه شده است. LibreNMS با هدف استفاده آسان، استقرار بدون درد و پشتیبانی از نظارت بر طیف گسترده‌ای از دستگاه‌ها انجام شده است. مجوز Observium در ماه مه 2012 به مجوز QPL تغییر یافته تغییر یافت و اخیراً به نسخه‌های رایگان و تجاری تقسیم شد.هدف ما با LibreNMS استمرار ایجاد NMS قابل استفاده است. برای نصب این سرویس نیاز به وب‌سرویس لینوکسی داریم. من در این مقاله از Ngnix استفاده می‌کنم.
+
+
+'''برخی از وب‌سرویس های لینوکسی:'''
+
+[https://www.nginx.com Nginx]
+
+[https://www.apachefriends.org/ Xampp]
+
+[https://www.apache.org/ Apache]
+
+[https://www.litespeedtech.com/ LiteSpeed]
+
+
+
+قبل از شروع دقت داشته باشید که این روش فقط روی '''Ubuntu 22.04''' تست شده است.
+
+برای نصب Ngnix دستورهای زیر را در '''Terminal''' اجرا کنید.
+
+<code>
+sudo apt install nginx</code>
+
+''' نکته: ''' اگر فایروال (ufw) روی سیستم شما نصب نباشد می توانید از مرحله بگذرید.
+
+'''نکته:''' می توانید با دستور <code>sudo ufw disable</code> فایروال را غیرفعال کنید و از این مرحله بگذرید '''(امنیت سیستم شما با این روش به خطر خواهد افتاد)'''
+
+<p style="background-color: #fff18a; padding: 20px;">
+''' نکته: ''' با استفاده از <code>gufw</code> می توانید تنظیمات فایروال را با محیط گرافیکی انجام دهید 
+<br>
+gufw با دستور <code>sudo apt install gufw</code> نصب می‌شود
+</p>
+
+قبل از تست کردن Nginx باید فایروال را تنظیم کنیم. در لینوکس  فایروال به عنوان <code>ufw</code> ثبت می‌شود. با دستور زیر لیست اپلیکیشن‌های فایروال به شما نمایش داده خواهد شد.
+<br>
+<code>
+sudo ufw app list
+</code>
+
+اگر Ngnix به درستی نصب شده باشد خروجی دستور بالا باید شامل سه App زیر باشد.
+
+<pre style="color: gray">
+  Nginx Full
+  Nginx HTTP
+  Nginx HTTPS
+</pre>
+
+با دستور زیر فایروال اجازه دسترسی به Ngnix می‌دهد.
+<p style="direction:ltr; text-align: right;"><code>sudo ufw allow 'Nginx Full'</code></p>
+اگر همه چیز درست تنظیم شده باشد با اجرای دستور زیر باید '''Status: Active''' باشد.
+
+<code>sudo ufw status</code>
+
+'''خروجی:'''
+<pre style="color: gray">
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere                  
+Nginx HTTP                 ALLOW       Anywhere                  
+OpenSSH (v6)               ALLOW       Anywhere (v6)             
+Nginx HTTP (v6)            ALLOW       Anywhere (v6)
+</pre>
+
+اگر با ''' Status: inactive''' مواجه شدید.
+
+با دستور <code>sudo ufw enable</code> فایروال را فعال کنید و دوباره دستور <code>sudo ufw status</code> را اجرا کنید، تا از فعال بودن ruleهای Ngnix اطمینان پیدا کنید.
+
+با دستور  <code>sudo systemctl status ngnix</code>
+باید با ''' Active: Active(Running) ''' مواجه شوید.
+
+<pre style="color: gray">
+nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset:>
+     Active: active (running) since Mon 2023-09-25 15:49:44 +0330; 6min ago
+       Docs: man:nginx(8)
+    Process: 1033 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_proce>
+    Process: 1049 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (c>
+   Main PID: 1057 (nginx)
+      Tasks: 17 (limit: 18637)
+     Memory: 18.6M
+        CPU: 68ms
+
+</pre>
+
+اگر <code>localhost</code> را در قسمت URL مروگر خود وارد کنید باید با پیام Welcome to Ngnix مواجه شوید.
+
+== مرحله دوم: اضافه کردن کاربر و دانلود LibreNMS ==
+با دستور زیر کاربری برای libreMNS اضافه می کنیم
+
+<code>"sudo useradd librenms -d /opt/librenms -M -r -s "$(which bash)</code>
+
+
+
+سپس با دستور <code>cd /opt</code> وارد محل نصب LibreMNS می شویم و با دستور زیر LibreMNS را دانلود می کنیم
+
+<code>sudo git clone https://github.com/librenms/librenms.git</code>
+
+
+== مرحله سوم: دادن دسترسی ها ==
+با چهار دستور زیر دسترسی ها لازم را بدهید
+
+<code>sudo chown -R librenms:librenms /opt/librenms</code>
+
+<code>sudo chmod 771 /opt/librenms</code><code>sudo setfacl -d -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage</code><code>sudo setfacl -R -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage</code>
+
+== مرحله چهارم: نصب PHP و وابستگی هایش ==
+برای اجرای LibreNMS نه تنها نیاز به سرور لینوکسی داریم بلکه به کامپایلر PHP نیز نیاز داریم. برای نصب کامپایلر PHP ابتدا باید repository آن را با دستورات زیر به apt اضافه کنیم.
+
+<code>sudo apt install software-properties-common -y</code>
+
+<code>sudo add-apt-repository universe</code>
+
+
+
+سپس با دستورات زیر apt را بروز کرده و PHP و مشتقات آن را نصب می‌کنیم.
+
+<code>sudo apt update</code>
+
+<code>sudo apt install acl curl fping git graphviz imagemagick mariadb-client mariadb-server mtr-tiny nginx-full nmap php-cli php-curl php-fpm php-gd php-gmp php-json php-mbstring php-mysql php-snmp php-xml php-zip rrdtool snmp snmpd whois unzip python3-pymysql python3-dotenv python3-redis python3-setuptools python3-systemd python3-pip</code>
+
+برای نصب وابستگی های PHP با دستور <code>sudo su - librenms</code> وارد یوزر که قبل تر ساختیم شوید و با اجرای دستور زیر وابستگی ها را دانلود و نصب کنید.
+
+<code>scripts/composer_wrapper.php install --no-dev/.</code>
+
+با دستور <code>exit</code> خارچ شوید
+
+== مرحله پنجم: نصب MariaDB و ساخت دیتابیس ==
+برای نصب MariaDB از دستور زیر استفاده کنید.
+
+<code>sudo apt install mariadb-server</code>
+
+
+
+روی Ubuntu این سرویس بعد از نصب به طور خودکار اجرا خواهد شد. برای ورود به MariaDB و ساخت دیتابیس از دستور زیر استفاده کنید.
+
+<code>sudo mysql</code>
+
+
+
+با دستور زیر دیتابیسی به نام LibreMNS ساخته می‌شود.
+
+<code>;mysql> CREATE DATABASE librenms</code>
+
+
+
+با دو دستور زیر دسترسی‌های لازم به دیتابیس داده می‌شود.
+
+<code>;'mysql> GRANT ALL on librenms.* to librenms@localhost identified by 'yourpassword</code> 
+
+<code>;mysql> FLUSH PRIVILEGES</code>
+
+
+
+'''توجه: بجای <code>yourpassword</code> رمز عبور دلخواه خود را قرار دهید.'''
+
+با دستور زیر از mysql خارج می‌شویم.
+
+<code>mysql> \q</code>
+
+
+
+همچنین باید تغییراتی در این فایل ایجاد کنیم. برای باز کردن فایل از دستور زیر استفاده می‌کنیم.
+
+<code>sudo gedit /etc/mysql/mariadb.conf.d/50-server.cnf</code>
+
+
+
+بعد از باز کردن فایل، <code>[mysqld]</code> را پیدا کنید. (این Attribute برای من در خط ۹ بود) و این سه خط کد را در زیر <code>[mysqld]</code> اضافه کنید.  
+
+<code>innodb_file_per_table=1</code>
+
+<code>lower_case_table_names=0</code>
+
+
+
+سپس با دو دستور زیر MariaDb را Restart کنید.
+
+<code>sudo systemctl enable mariadb</code> 
+
+<code>sudo systemctl restart mariadb</code>
+
+== مرحله ششم: تنظیمات PHP-FPM ==
+با استفاده از دستور زیر Template کد PHP-FPM را کپی می کنیم
+
+<code>sudo cp /etc/php/8.1/fpm/pool.d/www.conf /etc/php/8.1/fpm/pool.d/librenms.conf</code>
+
+
+باید تغییراتی در فایل ایجاد کنیم پس فایل را با دستور زیر باز کنید
+
+<code>sudo gedit /etc/php/8.1/fpm/pool.d/librenms.conf</code>
+
+
+در فایل به دنبال <code>[www]</code> بگردید و آن را به <code>[librenms]</code> تغییر دهید
+
+<code>user</code> و <code>group</code> را نیز مانند زیر تغییر دهید
+
+<code>user = librenms</code>
+
+<code>group = librenms</code>
+
+
+همچنین پارامتر <code>Listen</code> را نیز مانند زیر تغییر دهید
+
+<code>listen = /run/php-fpm-librenms.sock</code>
+
+== مرحله هفتم: تنظیمات وب سرویس ==
+با دستور <code>sudo gedit /etc/nginx/conf.d/librenms.conf</code> فایل تنظیمات وب سرویس را بسازید.
+ <span style="text-align: left" lang="en" dir="ltr">server {
+  listen      80;
+  server_name librenms.example.com;
+  root        /opt/librenms/html;
+  index       index.php;
+ 
+  charset utf-8;
+  gzip on;
+  gzip_types text/css application/javascript text/javascript application/x-javascript image/svg+xml text/plain text/xsd text/xsl text/xml image/x-icon;
+  location / {
+   try_files $uri $uri/ /index.php?$query_string;
+  }
+  location ~ [^/]\.php(/|$) {
+   fastcgi_pass unix:/run/php-fpm-librenms.sock;
+   fastcgi_split_path_info ^(.+\.php)(/.+)$;
+   include fastcgi.conf;
+  }
+  location ~ /\.(?!well-known).* {
+   deny all;
+  }</span>
+'''توجه:  <code>librenms.example.com</code>'''  با آدرس سایت خود مانند <code>localhost</code> عوض کنید. 
+
+== مرحله هشتم: نصب گرافیکی ==
+با ورود به سایت yoursite/install ساخت حساب کاربری را انجام داده و اطلاعات دیتابیس مانند زیر وارد کنید. 
+ host: localhost
+ username: librenms
+ password: yourpassword
+
+== مرحله نهم: کار با API (اختیاری) ==
+واسط برنامه‌نویسی نرم‌افزار کاربردی یا ای‌پی‌آی (به انگلیسی: API ، مخفف Application Programming Interface ) که به صورت خلاصه به آن واسط برنامه‌نویسی هم گفته می‌شود، واسط بین یک کتابخانه یا سیستم‌عامل و برنامه‌هایی است که از آن تقاضای سرویس می‌کنند. در اینجا با استفاده از LibreNMS API می توانید هر کاری که در محیط گرافیکی نرم افزار را انجام می دهد در کد خود نیز تعبیه کنید.
+
+
+برای استفاده از API اول باید API CORS را روشن کنید. برای اینکار می توانید '''[http://37.152.185.153/settings/api yoursite.xxx/settings/api]'''  را در مرورگر خود تایپ کنید و یا از طریق '''GlobalSetting -> API  <- ⚙️'''  وارد این منو شوید. سپس گزینه '''Enable CORS support for the API''' را فعال کنید.
+
+
+حال نیاز به API Access Token داریم برای دسترسی به این منو می توانید '''yoursite.xxx/api-access''' را در مرورگر خود تایپ کنید یا از طریق '''API -> API Settings''' '''<- ⚙️''' وارد صفحه شوید. حالا بر روی '''Create API Access Token''' کلیک کنید.
+
+
+'''نکته:''' برای استفاده از API باید '''API Access Token''' را با هدر '''X-Auth-Token''' ارسال کنید.
+
+برای مشاهده توابع قابل استفاده به [https://docs.librenms.org/API/ Librenms API Docs] مراجعه کنید
+
