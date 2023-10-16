@@ -1,9 +1,20 @@
+
 # <div dir="rtl">آموزشDeploy Dotnet روی لینوکس</div>
 این آموزش فقط روی دات نت ۷ و اوبونتو ۲۲.۰۴ تست شده است
 
 ## <div dir="rtl"> خروجی گرفتن</div>
+
 <div dir="rtl">
- نخست باید از پروژه خود خروجی بگیریم پس دستور زیر را اجرا کنید 
+ نخست دات نت را نصب کنیم 
+</div>
+
+    sudo apt install dotnet-sdk-7.0
+<div dir="rtl">
+<b>نکته:  می توانید با دستور  dotnet new mvc پروژه دات نت بسازید </b>
+</div>
+<br>
+<div dir="rtl">
+ سپس باید از پروژه خود خروجی بگیریم پس دستور زیر را اجرا کنید 
 </div>
 
     dotnet publish
@@ -47,9 +58,9 @@
 
 <div dir="rtl">
 محتویات پوشه publish را به پوشه ای که ساختیم کپی کنید
-    sudo cp yourprojectFolder/bin/Debug/net7.0/publish /var/www/app1
- 
 </div>
+
+    sudo cp yourprojectFolder/bin/Debug/net7.0/publish /var/www/app1
 
 <br>
 
@@ -134,4 +145,6 @@
     sudo systemctl enable app1.service
     sudo systemctl start app1.service
     sudo systemctl status app1.service
+
+
 
