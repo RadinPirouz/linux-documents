@@ -47,6 +47,8 @@
 
 <div dir="rtl">
 محتویات پوشه publish را به پوشه ای که ساختیم کپی کنید
+    sudo cp yourprojectFolder/bin/Debug/net7.0/publish /var/www/app1
+ 
 </div>
 
 <br>
