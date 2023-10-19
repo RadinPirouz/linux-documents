@@ -53,18 +53,23 @@
 
 **نکته مهم: username حتما باید نام کاربری شما در Ubuntu باشد**
 
-## استفاده از SMB در ویندوز 10
+## مرحله سوم: استفاده از SMB
+حالا که سرور را آماده کردیم نوبت به استفاده از فولدری که به اشتراک گذاشتیم رسیده است
+
 با دستور زیر در لینوکس IP سرور خود را مشخص می کنیم
 
 	ifconfig
 
+### استفاده در ویندوز
+
+
 با وارد کردن `//linuxserverip/sambashare` در منوی جستجو ویندوز می توان به پوشه که به اشتراک گذاشتیم دسترسی پیدا کرد
 
-## استفاده از SMB در سیستم عامل های دیگر
+### استفاده در سیستم عامل های دیگر
+
 [استفاده از SMB در اندروید](https://www.techrepublic.com/article/how-to-connect-to-an-smb-share-from-your-android-device/) 
 
 [استفاده از SMB در iPhone/iPad](https://osxdaily.com/2019/11/04/how-connect-smb-share-iphone-ipad-files-app/) 
 
 [استفاده از SMB در لینوکس (گنوم)](https://www.zdnet.com/article/how-to-connect-to-a-network-share-from-the-gnome-desktop/#:~:text=At%20the%20bottom%20of%20the,the%20computer%20hosting%20the%20sare%29.)
-
 
