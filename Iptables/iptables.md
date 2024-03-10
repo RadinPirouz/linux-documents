@@ -1,7 +1,4 @@
-```markdown
-# iptables
 ## First Whitelist Port and Block Ports at the End
-```
 
 
 
