@@ -1,150 +1,113 @@
+# Deploying .NET on Linux
 
-# <div dir="rtl">آموزشDeploy Dotnet روی لینوکس</div>
-این آموزش فقط روی دات نت ۷ و اوبونتو ۲۲.۰۴ تست شده است
+This tutorial has been tested only on .NET 7 and Ubuntu 22.04.
 
-## <div dir="rtl"> خروجی گرفتن</div>
+## Getting the Output
 
-<div dir="rtl">
- نخست دات نت را نصب کنیم 
-</div>
+First, let's install .NET:
+```bash
+sudo apt install dotnet-sdk-7.0
+```
+*Note: You can create a .NET project using `dotnet new mvc` command.*
 
-    sudo apt install dotnet-sdk-7.0
-<div dir="rtl">
-<b>نکته:  می توانید با دستور  dotnet new mvc پروژه دات نت بسازید </b>
-</div>
-<br>
-<div dir="rtl">
- سپس باید از پروژه خود خروجی بگیریم پس دستور زیر را اجرا کنید 
-</div>
-
-    dotnet publish
-
-<div dir="rtl">
-مکان خروجی فایل بعد از اتمام دستور به شما نشان داده خواهد شد معمولا خروجی پروژه در مکان زیر قرار خواهد گرفت  
-</div>
-
+Then, we need to publish our project:
+```bash
+dotnet publish
+```
+The location of the output file will be displayed after the command finishes. Typically, the project output will be placed in:
 **bin/Debug/net7.0/publish**
 
-## <div dir="rtl"> نصب Ngnix</div>
-<div dir="rtl">
-اِنجین‌اِکس (به انگلیسی: nginx) یک کارساز وب با حجم پایین و کارایی بالا است که تحت مجوز بی‌اس‌دی منتشر می‌شود. این کارساز وب در یونیکس، گنو/لینوکس، بی‌اس‌دی، مک او اس و ویندوز اجرا می‌شود. بر طبق گفتهٔ نت‌کرافت، در حال 
-حاضر ۱۲٫۰۷٪ از دامنه‌های اینترنت از این کارساز استفاده می‌کنند.
-</div>
-<br/>
-<div dir="rtl">
-<b>برای نصب Ngnix از طریق apt از دستور زیر استفاده کنید
-</b>
-</div>
+## Installing Nginx
 
-    sudo apt install ngnix
+**Nginx** is a high-performance web server with low resource usage, distributed under the terms of the BSD license. It runs on Unix-like operating systems and is widely used, currently powering 12.07% of the internet's domains.
 
-<div dir="rtl">
-سپس با استفاده از دستور  sudo ufw disable  فایروال را غیرفعال کنید
-اگر با این دستور با خطا مواجه شد یعنی شما فایروال ندارد پس از روی این بخش رد شوید
+To install **Nginx** via `apt`, use the following command:
+```bash
+sudo apt install nginx
+```
 
-</div>
-<br>
-<div dir="rtl">
-اگر نصب موفقیت آمیز بوده باشد با تایپ کردن localhost در مرورگر باید با پیام Welcome to Ngnix مواجه شوید
-</div>
+Then, disable the firewall with:
+```bash
+sudo ufw disable
+```
+If you encounter an error with this command, it means you don't have a firewall. In that case, skip this part.
 
-## <div dir="rtl"> تنظیمات Ngnix</div>
-<div dir="rtl">
-با دستور زیر یک پوشه برای سایت خود می سازیم
-</div>
+If the installation is successful, you should see "Welcome to Nginx" when typing `localhost` in your browser.
 
-    sudo mkdir /var/www/app1 
+## Configuring Nginx
 
+Create a directory for your site:
+```bash
+sudo mkdir /var/www/app1 
+```
 
-<div dir="rtl">
-محتویات پوشه publish را به پوشه ای که ساختیم کپی کنید
-</div>
+Copy the contents of the `publish` directory to the newly created directory:
+```bash
+sudo cp yourprojectFolder/bin/Debug/net7.0/publish /var/www/app1
+```
 
-    sudo cp yourprojectFolder/bin/Debug/net7.0/publish /var/www/app1
+Then, navigate to the Nginx configuration:
+```bash
+sudo vim /etc/nginx/sites-available/default
+```
 
-<br>
-
-<div dir="rtl">
-سپس با دستور زیر وارد کانفیگ Ngnix می شویم
-</div>
-
-    sudo vim /etc/nginx/sites-available/default
-
-<div dir="rtl">
-و محتویات داخل فایل را با زیر عوض می کنیم
-</div>
-
-    server {
-        listen        80;
-        server_name   example.com *.example.com;
-        location / {
-            proxy_pass         http://localhost:5000;
-            proxy_http_version 1.1;
-            proxy_set_header   Upgrade $http_upgrade;
-            proxy_set_header   Connection keep-alive;
-            proxy_set_header   Host $host;
-            proxy_cache_bypass $http_upgrade;
-            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header   X-Forwarded-Proto $scheme;
-        }
+Replace the contents of the file with the following:
+```nginx
+server {
+    listen        80;
+    server_name   example.com *.example.com;
+    location / {
+        proxy_pass         http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection keep-alive;
+        proxy_set_header   Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
     }
+}
+```
+*Note: Replace `example.com` with your site address.*
 
-<div dir="rtl">
-<b>نکته: به جای example.com آدرس سایت خود را بگذارید
-</b>
-</div>
-<br>
-<div dir="rtl">
-با دستور زیر محتویات فایلی را که تغییر دادیم را بررسی کنید
-</div>
+Check the configuration file syntax:
+```bash
+sudo nginx -t
+```
 
-    sudo ngnix -t
+If no errors are reported, reload Nginx to apply the changes:
+```bash
+sudo nginx -s reload
+```
 
-<br>
-<div dir="rtl">
-اگر با خطا مواجه نشدید دستور زیر را فراخوانی کنید تا تنظیمات Ngnix دوباره بارگذاری شود
-</div>
+## Adding the Site as a Service
 
-    sudo ngnix -s reload
+Create a service file for your site:
+```bash
+sudo vim /etc/systemd/system/app1.service
+```
 
-## <div dir="rtl"> افزودن سایت به عنوان سرویس</div>
-<div dir="rtl">
-با دستور زیر فایلی برای سرویس خود درست می کنیم</div>
-
-    sudo vim /etc/systemd/system/app1.service
-
-<br>
-
-  <div dir="rtl">
-کد زیر در فایل بالا کپی کنید
-</div>
-
-    [Unit] 
-    Description= dotnet webapp
-    [Service] 
-    WorkingDirectory=/var/www/app1
-    ExecStart=/usr/bin/dotnet /var/www/app/projectname.dll 
-    Restart=always
-    RestartSec=10
-    SyslogIdentifier=projectname
-    Environment=ASPNETCORE_ENVIRONMENT=Production
+Copy the following code into the file:
+```plaintext
+[Unit] 
+Description=dotnet webapp
+[Service] 
+WorkingDirectory=/var/www/app1
+ExecStart=/usr/bin/dotnet /var/www/app/projectname.dll 
+Restart=always
+RestartSec=10
+SyslogIdentifier=projectname
+Environment=ASPNETCORE_ENVIRONMENT=Production
     
-    [Install]
-    WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
+```
+*Note: Replace `projectname` with your project's name.*
 
-<div dir="rtl">
-<b>
-نکته: به جای projectname اسم پروژه خود را بگذارید
-</b>
-</div>
-<br>
-<div dir="rtl">
-با دستور های زیر سایت را فعال کنید و از وضعیت آن مطلع شوید
-</div>
-
-    sudo systemctl enable app1.service
-    sudo systemctl start app1.service
-    sudo systemctl status app1.service
-
-
+Enable and start the site, and check its status:
+```bash
+sudo systemctl enable app1.service
+sudo systemctl start app1.service
+sudo systemctl status app1.service
+```
 
