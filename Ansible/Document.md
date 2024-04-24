@@ -43,7 +43,7 @@ ansible -m <module> -a "<command>" --become -i <inventory_file> <group_of_server
 Example:
 
 ```bash
-ansible -m command -a "sudo reboot" -i server.ini all
+ansible -m command -a "reboot" --become -i server.ini all
 ```
 
 ## More Examples
