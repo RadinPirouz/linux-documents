@@ -1,120 +1,64 @@
-## Docker Cheat Sheet
+# Docker Commands and Concepts
 
-### Docker Data Directory
-- **State Less:** Don't save your data like Nginx.
-- **State Full:** Save your data.
-  - `/var/lib/docker/` ==> Docker data directory
+## Docker Concepts
 
-### Docker Commands
+- **Stateless**: Do not save your data (like Nginx).
+- **Stateful**: Save your data.
 
-#### Login to Docker Hub
-```bash
-docker login
-```
+## Docker Data Directory
 
-#### Pull Docker Image
-```bash
-docker pull <repo-addr>
-```
+- `/var/lib/docker/`: Docker data directory.
+- `/var/lib/docker/containers/`: Container configuration and file directory.
+- `/var/lib/docker/volumes`: Directory where docker volumes are saved.
 
-#### Show Pulled Images
-```bash
-docker images
-```
+## Docker CLI Commands
 
-#### Run Docker Container
-```bash
-docker run <options> <image>
-```
-- **Options**:
-  - `-it`: Run interactively and allocate a pseudo-TTY.
-  - `-dit`: Run in detached mode with interactive TTY.
+### Authentication
 
-#### Go to Container Shell
-```bash
-docker exec -it <container name> bash
-```
+- `docker login`: Login to Docker Hub with CLI.
 
-#### Remove Docker Container
-```bash
-docker rm <container name or ID>
-```
+### Image Management
 
-#### Stop Docker Container
-```bash
-docker stop <container name or ID>
-```
+- `docker pull <repo-addr>`: Pull a Docker image.
+- `docker images`: Show pulled images.
+- `docker rmi -f <image-id>`: Remove an image.
+- `docker save -o <file-location-and-name> <image-name>`: Save image as an external file.
+- `docker load -i <file-location>`: Import a Docker image.
 
-#### Stop and Remove Docker Container
-```bash
-docker rm -f <container name or ID>
-```
+### Container Management
 
-#### List Docker Containers
-```bash
-docker ps -aq
-```
+- `docker run <options> <img-name>`: Run a Docker container.
+  - `docker run`: Run Docker (after run exited).
+  - `docker run -it`: Run and give bash to me.
+  - `docker run -dit`: Run and give bash to me and run in the background.
+- `docker exec -it <container-name>`: Go to container shell.
+- `docker rm <container-name>`: Remove Docker container.
+- `docker stop <container-name>`: Stop Docker container.
+- `docker rm -f <container-name>`: Stop and remove Docker container.
+- `docker ps -aq`: Give all Docker container IDs.
+- `docker ps -aq -f status=exited`: Give all Docker container IDs with exited status.
+- `docker container prune`: Remove all stopped containers.
+- `docker commit <container-name> <new-name>`: Make a custom Docker image.
+- `docker inspect <container-name>`: Get all data about container information.
+- `docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container-name>`: Get IP of the container.
+- `docker cp <file_on_local> <container-name>:/<location>`: Copy from local to container.
+- `docker cp <container-name>:/<location> <local-location>`: Copy from container to local.
+- `docker stats`: Monitor Docker stats.
+- `docker run -dit --name server --restart=always ubuntu`: Run container again after restarting the service or main server.
+- `docker build -t <appname>:<appver> <location-of-docker-file>`: Build Docker image from a Dockerfile.
 
-#### List Exited Docker Containers
-```bash
-docker ps -aq -f status=exited
-```
+### Volume Management
 
-#### Remove Exited Docker Containers
-```bash
-docker rm $(docker ps -aq -f status=exited)
-```
+- `docker volume ls`: List all volumes.
+- `docker volume create <name-of-volume>`: Create a volume for Docker.
+- `docker volume inspect <vol-name>`: Give information about the volume.
+- `docker run -dit --name <container-name> -v <volume-name>:<location-in-container> <img-name>`: Run Docker image and save target location data in volume.
 
-#### Remove All Stopped Containers
-```bash
-docker container prune
-```
+### Network Management
 
-#### Container Configuration and Files
-- `/var/lib/docker/containers/` ==> Container config and file directory
-
-#### Get Container Information
-```bash
-docker inspect <container name or ID>
-```
-
-#### Get Container IP Address
-```bash
-docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container name>
-```
-
-#### Copy Files Between Local and Container
-```bash
-docker cp <file_on_local> <container-name>:/<location>
-docker cp <container-name>:/<location> <local_location>
-```
-
-#### Monitor Docker Container Statistics
-```bash
-docker stats
-```
-
-#### Run Container with Restart Policy
-```bash
-docker run -dit --name server --restart=always ubuntu
-```
-
-#### Create Custom Docker Image
-```bash
-docker commit <containername> <newname>
-```
-
-#### Save Docker Image to External File
-```bash
-docker save -o <file-location-and-name> <image-name>
-```
-
-#### Remove Docker Image
-```bash
-docker rmi -f <image-id>
-```
-
-#### Load Docker Image from File
-```bash
-docker load -i <file-location>
-```
+- `docker network ls`: List all Docker networks.
+- `docker network create <network-name>`: Create a Docker network.
+- `docker network create --subnet <ip>/<subnet> --gateway <gateway-ip> --driver=<network-type> <net-name>`: Create network with custom settings.
+- `docker run -dit --name <container-name> --network <network-name> <img-name>`: Run a container and connect it to a custom network.
+- `docker network connect <network-name> <container-name>`: Connect a container to a custom network.
+- `docker network disconnect <network-name> <container-name>`: Disconnect a network from a container.
