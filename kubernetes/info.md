@@ -59,19 +59,11 @@
    ```
 
 ### Step 4: Enable IPv4 Forwarding
-1. Edit the sysctl configuration file to enable IPv4 forwarding.
+1. Update Config File
    ```bash
-   vim /etc/sysctl.conf
+    sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf && sysctl -p
    ```
-   Add or uncomment the following line:
-   ```
-   net.ipv4.ip_forward=1
-   ```
-2. Apply the changes.
-   ```bash
-   sysctl -p
-   sysctl --system
-   ```
+
 
 ### Step 5: Install Required Packages
 1. Install necessary packages.
