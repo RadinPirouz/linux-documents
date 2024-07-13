@@ -190,19 +190,4 @@ spec:
 
 This defines a pod named `my-pod` running an Nginx container exposing port 80.
 
-## Useful Kubernetes Commands
 
-### View Pod Details
-
-```bash
-kubectl get pod -n my-ns <pod-name> -o yaml
-```
-
-This command retrieves and displays the YAML configuration of the pod `testpod1` in the namespace `my-ns`.
-
-### Label a Node
-
-```bash
-kubectl label node <node-name> kubernetes.io/<var-name>=<var-value>
-kubectl get nodes --show-labels
-```

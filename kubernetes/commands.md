@@ -100,3 +100,18 @@ kubectl api-resources
 ```bash
 kubectl apply -f <yaml-file> -n <namespace-name>
 ```
+### View Pod Details
+
+```bash
+kubectl get pod -n my-ns <pod-name> -o yaml
+```
+
+This command retrieves and displays the YAML configuration of the pod `testpod1` in the namespace `my-ns`.
+
+### Label a Node
+
+```bash
+kubectl label node <node-name> kubernetes.io/<var-name>=<var-value>
+kubectl get nodes --show-labels
+```
+
