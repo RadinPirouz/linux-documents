@@ -114,4 +114,23 @@ This command retrieves and displays the YAML configuration of the pod `testpod1`
 kubectl label node <node-name> kubernetes.io/<var-name>=<var-value>
 kubectl get nodes --show-labels
 ```
+### Retrieve the ReplicaSet
+To retrieve information about the ReplicaSet in the `my-ns` namespace, use the following command:
+```bash
+kubectl get rs -n my-ns
+```
+
+### Delete All Pods in the Namespace
+To delete all pods in the `my-ns` namespace, use the following command:
+```bash
+kubectl delete pod --all -n my-ns
+```
+
+### Change the Replica Count to 5
+To scale the ReplicaSet to 5 replicas, you can use one of the following methods:
+
+1. **Using the `kubectl scale` Command**
+```bash
+kubectl scale rs my-app --replicas=5 -n my-ns
+```
 

@@ -1,7 +1,3 @@
-# Kubernetes YAML Files
-
-This document provides explanations and details for various Kubernetes YAML configurations, describing how different Kubernetes objects such as Namespaces, Pods, and other specifications are defined and utilized. The examples cover creating namespaces, deploying pods, setting resource limits, and using node selectors.
-
 ## Namespace Definition
 
 ```yaml
