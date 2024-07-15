@@ -134,3 +134,61 @@ To scale the ReplicaSet to 5 replicas, you can use one of the following methods:
 kubectl scale rs my-app --replicas=5 -n my-ns
 ```
 
+## Commands to Manage the Deployment
+
+### Scale the Deployment
+To scale the Deployment to 6 replicas:
+```bash
+kubectl -n my-ns scale deployment myapp --replicas 6
+```
+
+### Retrieve Deployment, ReplicaSets, and Pods
+To retrieve information about the Deployment, ReplicaSets, and Pods:
+```bash
+kubectl get deployment,rs,po myapp -n my-ns
+```
+
+### Delete the Deployment
+To delete the Deployment:
+```bash
+kubectl delete deployment myapp -n my-ns
+```
+
+### Retrieve ReplicaSets
+To retrieve ReplicaSets:
+```bash
+kubectl get rs -n my-ns
+```
+
+### Rollback a Deployment
+To undo the last rollout:
+```bash
+kubectl rollout undo deployment -n my-ns myapp
+```
+
+To view rollout history:
+```bash
+kubectl rollout history deployment -n my-ns 
+```
+
+To view a specific revision:
+```bash
+kubectl rollout history deployment -n my-ns --revision 2
+```
+
+To rollback to a specific revision:
+```bash
+kubectl rollout undo deployment -n my-ns myapp --to-revision 2
+```
+
+### Annotate Deployment with Change Cause
+To add a change cause annotation:
+```bash
+kubectl annotate deployment/myapp -n my-ns myapp "kubectl.kubernetes.io/change-cause=v14 released"
+```
+
+### Horizontal Pod Autoscaler
+To create an autoscaler for the Deployment:
+```bash
+kubectl -n my-ns autoscale deployment nginx --cpu-percent=50 --min=4 --max=10
+```
