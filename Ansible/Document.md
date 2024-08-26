@@ -1,76 +1,156 @@
+# Ansible Configuration Guide
 
-# Ansible Module Usage
+Ansible is a powerful automation tool used to manage and configure servers. This guide provides examples of how to structure your inventory files, which are essential for defining the servers and groups that Ansible will manage. Additionally, it covers common Ansible commands for interacting with your servers.
 
-Ansible modules are standalone scripts that can be used within Ansible to perform various tasks on managed nodes. Here are some examples of using Ansible modules:
+## Inventory File Examples
 
-## Basic Module Execution
+### INI Format
 
-To execute a module against all hosts in your inventory file:
+The INI format is one of the simplest ways to define your inventory. Below are two examples showcasing different use cases.
 
-```bash
-ansible -m <module> all -i <inventory_file>
+#### Example 1: Single Group Inventory
+
+In this example, all servers are grouped under a single `[all]` group. Each server is defined with specific connection details:
+
+```ini
+[all]
+<server-name> ansible_host=<server-ip> ansible_ssh_pass=<password> ansible_port=<ssh-port> ansible_connection=<connection-type>
 ```
 
-Example:
+- **`<server-name>`**: A label or hostname for your server.
+- **`<server-ip>`**: The IP address of the server.
+- **`ansible_ssh_pass`**: The SSH password for connecting to the server.
+- **`ansible_port`**: The port used for SSH connections.
+- **`ansible_connection`**: The connection type (e.g., ssh, winrm).
+
+#### Example 2: Grouped Inventory with Variables
+
+This example demonstrates grouping servers by roles (e.g., `web`, `db`, `bk`). Group-specific variables are defined under `[all:vars]`:
+
+```ini
+[all]
+<server1-name> ansible_host=<server1-ip>
+<server2-name> ansible_host=<server2-ip>
+<server3-name> ansible_host=<server3-ip>
+
+[web]
+<server1-name>
+
+[db]
+<server2-name>
+
+[bk]
+<server3-name>
+
+[all:vars]
+ansible_user=<username>
+ansible_port=<ssh-port>
+```
+
+- **Groups**: Servers are organized into different groups (`web`, `db`, `bk`).
+- **`[all:vars]`**: Common variables for all groups.
+
+### YAML Format
+
+The YAML format provides a more structured and readable way to define your inventory, especially useful for larger or more complex environments.
+
+#### Example: Grouped Inventory with Host-Specific Variables
+
+This example illustrates how to define an inventory with nested groups and host-specific variables:
+
+```yaml
+all:
+  children:
+    webservers:
+      hosts:
+        192.168.1.100:
+          ansible_port: 22
+        192.168.1.110:
+          ansible_port: 1357
+      vars:
+        http_port: 8080
+    dbserver:
+      hosts:
+        db.main.local:
+          db_user: admin
+          db_pass: secret
+```
+
+- **`children`**: Groups within the `all` group, such as `webservers` and `dbserver`.
+- **`hosts`**: List of servers under each group, with their specific variables.
+- **`vars`**: Group-specific variables, such as `http_port` for `webservers`.
+
+## Common Ansible Commands
+
+Here are some frequently used Ansible commands for managing your servers:
+
+### Listing Hosts
+
+List all hosts defined in the inventory file:
+
+```bash
+ansible --list-hosts all -i servers.ini
+# or for YAML format
+ansible --list-hosts all -i servers.yaml
+```
+
+### Ping All Servers
+
+Check the connectivity of all servers:
 
 ```bash
 ansible -m ping all -i server.ini
 ```
 
-## Module Execution with Arguments
+### Execute Commands
 
-You can pass arguments to modules using the `-a` flag:
-
-```bash
-ansible -m <module> -a <arguments> -i <inventory_file> <group_of_servers>
-```
-
-Examples:
+Run a command (e.g., `uptime`) on all servers:
 
 ```bash
-ansible -m command -a "uptime" -i server.ini all
-ansible -m command -a "uname -a" -i server.ini all
+ansible -m command -a "uptime" all -i server.ini
 ```
 
-## Running Commands as sudo
+### Copy Files to Servers
 
-If the command requires root privileges, you can use the `--become` or `-b` flag:
+Copy a file from the Ansible server to all target servers:
 
 ```bash
-ansible -m <module> -a "<command>" --become -i <inventory_file> <group_of_servers>
+ansible -m copy -a "src=<file-location-on-ansiblesv> dest=<destination-location-on-server>" all -i server.ini
 ```
 
-Example:
+### Run Commands with Sudo
+
+Execute a command with elevated privileges (sudo) as the root user:
 
 ```bash
-ansible -m command -a "reboot" --become -i server.ini all
+ansible -m command -a "uptime" all -i server.ini --become --become-user root --become-method sudo 
 ```
 
-## More Examples
+### Install a Package
 
-Here are some additional examples demonstrating Ansible module usage:
-
-- Gathering facts from all hosts:
+Install the `nginx` package on all servers:
 
 ```bash
-ansible -m setup all -i server.ini
+ansible -m apt -a "name=nginx state=present" --become --become-user root --become-method sudo
 ```
 
-- Copying a file to all hosts:
+### Uninstall a Package
+
+Remove the `nginx` package from all servers:
 
 ```bash
-ansible -m copy -a "src=/path/to/src/file dest=/path/to/destination/" -i server.ini all
+ansible -m apt -a "name=nginx state=absent" --become --become-user root --become-method sudo
 ```
 
-- Installing a package using apt module:
+### Update and Upgrade Packages
+
+Update the package list and upgrade all packages:
 
 ```bash
-ansible -m apt -a "name=<package_name> state=present" -i server.ini all
+ansible -m apt -a "upgrade=yes update_cache=yes" --become --become-user root --become-method sudo
 ```
 
-- Restarting a service:
+## Notes
 
-```bash
-ansible -m service -a "name=<service_name> state=restarted" -i server.ini all
-```
-
+- **Module Limitations**: The `command` module does not support special characters or shell features. For commands that require shell features (like pipes or redirection), use the `shell` module.
+- **Raw Module**: Use the `raw` module for devices that do not have Python installed. It allows you to execute raw SSH commands directly.
