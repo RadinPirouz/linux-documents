@@ -1,6 +1,6 @@
 # Ansible Configuration Guide
 
-Ansible is a powerful automation tool used to manage and configure servers. This guide provides examples of how to structure your inventory files, which are essential for defining the servers and groups that Ansible will manage. Additionally, it covers common Ansible commands for interacting with your servers.
+Ansible is a powerful automation tool used to manage and configure servers. This guide provides examples of how to structure your inventory files, essential for defining the servers and groups that Ansible will manage. Additionally, it covers common Ansible commands for interacting with your servers.
 
 ## Inventory File Examples
 
@@ -82,7 +82,7 @@ all:
 
 ## Common Ansible Commands
 
-Here are some frequently used Ansible commands for managing your servers:
+Below are some frequently used Ansible commands for managing your servers.
 
 ### Listing Hosts
 
@@ -115,7 +115,7 @@ ansible -m command -a "uptime" all -i server.ini
 Copy a file from the Ansible server to all target servers:
 
 ```bash
-ansible -m copy -a "src=<file-location-on-ansiblesv> dest=<destination-location-on-server>" all -i server.ini
+ansible -m copy -a "src=<file-location-on-ansible-server> dest=<destination-location-on-server>" all -i server.ini
 ```
 
 ### Run Commands with Sudo
@@ -150,7 +150,43 @@ Update the package list and upgrade all packages:
 ansible -m apt -a "upgrade=yes update_cache=yes" --become --become-user root --become-method sudo
 ```
 
-## Notes
+## Advanced Usage and Notes
 
-- **Module Limitations**: The `command` module does not support special characters or shell features. For commands that require shell features (like pipes or redirection), use the `shell` module.
+### Special Considerations
+
+- **Module Limitations**: The `command` module does not support special characters or shell features. For commands requiring shell features (like pipes or redirection), use the `shell` module.
+  
+  Example:
+  ```bash
+  ansible -m shell -a "cat /etc/passwd | grep -l" all -i server.ini --become
+  ```
+
 - **Raw Module**: Use the `raw` module for devices that do not have Python installed. It allows you to execute raw SSH commands directly.
+
+  Example:
+  ```bash
+  ansible -m raw -a "hostnamectl" all -i server.ini --become
+  ```
+
+### Gathering System Facts
+
+Use the `setup` module to gather system facts from all servers:
+
+```bash
+ansible -m setup --become all -i server.ini
+```
+
+You can filter specific facts:
+
+```bash
+ansible -m setup -a "filter=ansible_memory" --become all -i server.ini
+ansible -m setup -a "filter=ansible_distribution" --become all -i server.ini
+```
+
+### Installing Ansible Galaxy Collections
+
+To install the `ansible.posix` collection, use:
+
+```bash
+ansible-galaxy collection install ansible.posix
+```
