@@ -1,4 +1,3 @@
-
 # Ansible Playbook Guide
 
 Ansible Playbooks are YAML files that define a series of tasks to automate server configuration, deployment, and management. This guide provides instructions on how to run a playbook and includes examples to help you get started.
@@ -162,22 +161,46 @@ This playbook demonstrates the use of conditional statements to check if a file 
   when: file_output.rc != 0
 ```
 
-### Exit Codes Overview
+### Check File Existence Using the `stat` Module
 
-Understanding exit codes is crucial when dealing with shell commands:
+You can also check if a file exists using the `stat` module, which is more reliable and provides more information:
 
-| Exit Code | Description                                   |
-|-----------|-----------------------------------------------|
-| 0         | Success: The command completed successfully.  |
-| 1         | General error: Catchall for general errors.   |
-| 2         | Misuse of shell builtins (e.g., `cd`).        |
-| 126       | Command invoked cannot execute.               |
-| 127       | Command not found.                            |
-| 128       | Invalid argument to exit.                     |
-| 130       | Script terminated by Control-C.               |
-| 137       | Script terminated by `kill` (or OOM).         |
-| 139       | Segmentation fault.                           |
-| 141       | Script terminated by `kill -13` (SIGPIPE).    |
-| 143       | Script terminated by `kill -15` (SIGTERM).    |
-| 255       | Exit status out of range (exceeds 255).       |
+```yaml
+- name: Check if File Exists
+  ansible.builtin.stat:
+    path: /path/to/file
+  register: file_stat
+
+- name: File Exists
+  ansible.builtin.debug:
+    msg: "File exists"
+  when: file_stat.stat.exists
+
+- name: File Does Not Exist
+  ansible.builtin.debug:
+    msg: "File does not exist"
+  when: not file_stat.stat.exists
+```
+
+### Standalone Nginx Installation
+
+This playbook installs Nginx on both Debian-based and RedHat-based systems by detecting the operating system family:
+
+```yaml
+- name: Install Nginx
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install on Debian-based systems
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install on RedHat-based systems
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+```
 
