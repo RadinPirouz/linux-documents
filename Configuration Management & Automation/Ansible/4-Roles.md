@@ -12,8 +12,6 @@ ansible-galaxy init <role_name>
 
 This command generates the standard directory structure for an Ansible role, which includes the following directories:
 
-![Roles Directory Structure](../assets/63-roles.png)
-
 ### Ansible Role Directory Breakdown
 
 1. **`roles/`**: The top-level directory where all roles are stored. Each role has its own directory within this folder.
@@ -174,5 +172,5 @@ The `tasks` directory is where the main actions of a role are defined. It typica
 ```
 
 ## Reference:
-#
+
 [Sudoix Ansible Roles Document Github](https://github.com/sudoix/DevOps/blob/main/06-ansible/03-Roles.md)
