@@ -1,6 +1,6 @@
 # Ansible Playbook Guide
 
-Ansible Playbooks are YAML files that automate server configuration, deployment, and management tasks. This guide provides instructions on running a playbook, explains key components, and includes examples to help you get started.
+Ansible Playbooks are YAML files that automate server configuration, deployment, and management tasks. This guide covers the basics of running a playbook, key concepts, and provides example playbooks to help you get started.
 
 ## Table of Contents
 - [Ansible Playbook Guide](#ansible-playbook-guide)
@@ -13,30 +13,32 @@ Ansible Playbooks are YAML files that automate server configuration, deployment,
     - [2. Update APT Cache and Install Nginx](#2-update-apt-cache-and-install-nginx)
     - [3. Install Nginx and Copy Configuration File](#3-install-nginx-and-copy-configuration-file)
     - [4. Full Nginx Deployment: Install, Configure, and Restart](#4-full-nginx-deployment-install-configure-and-restart)
-    - [Show Debug Message](#show-debug-message)
-    - [Use a Shell Command](#use-a-shell-command)
-    - [Playbook with Conditional Statements](#playbook-with-conditional-statements)
-    - [Check File Existence Using the `stat` Module](#check-file-existence-using-the-stat-module)
-    - [Standalone Nginx Installation](#standalone-nginx-installation)
-    - [Create a User](#create-a-user)
-    - [Install Multiple Packages](#install-multiple-packages)
-      - [Using a Loop:](#using-a-loop)
-      - [Using a List:](#using-a-list)
-    - [Create Multiple Users](#create-multiple-users)
-    - [Import Playbook Files](#import-playbook-files)
+    - [5. Show Debug Message](#5-show-debug-message)
+    - [6. Use a Shell Command](#6-use-a-shell-command)
+    - [7. Playbook with Conditional Statements](#7-playbook-with-conditional-statements)
+    - [8. Check File Existence Using the `stat` Module](#8-check-file-existence-using-the-stat-module)
+    - [9. Standalone Nginx Installation](#9-standalone-nginx-installation)
+    - [10. Create a User](#10-create-a-user)
+    - [11. Install Multiple Packages](#11-install-multiple-packages)
+      - [Using a Loop](#using-a-loop)
+      - [Using a List](#using-a-list)
+    - [12. Create Multiple Users](#12-create-multiple-users)
+    - [13. Import Playbook Files](#13-import-playbook-files)
+    - [14. Remove `resolv.conf`](#14-remove-resolvconf)
+    - [15. Enable SSH Login Banner](#15-enable-ssh-login-banner)
 
 ---
 
 ## Running an Ansible Playbook
 
-To execute an Ansible Playbook, use the following command:
+To run an Ansible playbook, use the following command:
 
 ```bash
 ansible-playbook <playbook.yaml> -i <inventory-file.ini>
 ```
 
-- **`<playbook.yaml>`**: Path to your playbook file.
-- **`<inventory-file.ini>`**: Path to your inventory file (can be in INI or YAML format).
+- **`<playbook.yaml>`**: The path to your playbook file.
+- **`<inventory-file.ini>`**: The path to your inventory file (can be in INI or YAML format).
 
 ### Example
 
@@ -48,10 +50,10 @@ This command runs the `deploy_nginx.yaml` playbook on the hosts defined in `inve
 
 ## Key Concepts
 
-- **`hosts: all`**: Defines the target hosts from the inventory on which the playbook should run.
-- **`become: yes`**: Ensures tasks requiring elevated privileges (sudo) are executed as the root user.
-- **Handlers**: Special tasks that are triggered by other tasks using the `notify` directive.
-- **Variables**: Dynamic values that can be reused across tasks and playbooks, enhancing flexibility and maintainability.
+- **`hosts: all`**: Specifies the target hosts from the inventory on which the playbook should run.
+- **`become: yes`**: Executes tasks with elevated privileges (sudo).
+- **Handlers**: Special tasks triggered by other tasks using the `notify` directive.
+- **Variables**: Dynamic values that can be reused across tasks and playbooks for flexibility and maintainability.
 
 ---
 
@@ -76,7 +78,7 @@ This playbook updates the APT package cache on all specified hosts.
 This playbook updates the APT cache and installs the Nginx web server.
 
 ```yaml
-- name: Install Nginx and Update APT Cache
+- name: Update APT Cache and Install Nginx
   hosts: all
   become: yes
   tasks:
@@ -89,7 +91,7 @@ This playbook updates the APT cache and installs the Nginx web server.
 
 ### 3. Install Nginx and Copy Configuration File
 
-This playbook installs Nginx and copies a custom configuration file from the Ansible server to the target hosts.
+This playbook installs Nginx and copies a custom configuration file from the Ansible control node to the target hosts.
 
 ```yaml
 - name: Install Nginx and Copy Configuration
@@ -110,7 +112,7 @@ This playbook installs Nginx and copies a custom configuration file from the Ans
 
 ### 4. Full Nginx Deployment: Install, Configure, and Restart
 
-This playbook demonstrates a complete Nginx deployment.
+This playbook demonstrates a complete Nginx deployment, including installation, configuration, and restarting the service.
 
 ```yaml
 - name: Full Nginx Deployment
@@ -136,7 +138,7 @@ This playbook demonstrates a complete Nginx deployment.
         state: restarted
 ```
 
-### Show Debug Message
+### 5. Show Debug Message
 
 Use the `debug` module to display a message during playbook execution. This is useful for testing or providing feedback within your playbooks.
 
@@ -149,7 +151,7 @@ Use the `debug` module to display a message during playbook execution. This is u
         msg: "Test Message"
 ```
 
-### Use a Shell Command
+### 6. Use a Shell Command
 
 Run a shell command and capture the output for further use within the playbook.
 
@@ -167,9 +169,9 @@ Run a shell command and capture the output for further use within the playbook.
         msg: "Output is: {{ shell_output.stdout }}"
 ```
 
-### Playbook with Conditional Statements
+### 7. Playbook with Conditional Statements
 
-This playbook demonstrates the use of conditional statements to check if a file exists and take action based on the result.
+This playbook demonstrates using conditional statements to check if a file exists and take action based on the result.
 
 ```yaml
 - name: Check if File Exists
@@ -192,7 +194,7 @@ This playbook demonstrates the use of conditional statements to check if a file 
       when: file_output.rc != 0
 ```
 
-### Check File Existence Using the `stat` Module
+### 8. Check File Existence Using the `stat` Module
 
 A more reliable method to check if a file exists using the `stat` module.
 
@@ -216,7 +218,7 @@ A more reliable method to check if a file exists using the `stat` module.
       when: not file_stat.stat.exists
 ```
 
-### Standalone Nginx Installation
+### 9. Standalone Nginx Installation
 
 This playbook installs Nginx on both Debian-based and RedHat-based systems by detecting the operating system family.
 
@@ -238,7 +240,7 @@ This playbook installs Nginx on both Debian-based and RedHat-based systems by de
       when: ansible_facts['os_family'] == "RedHat"
 ```
 
-### Create a User
+### 10. Create a User
 
 This playbook checks if a user exists and creates the user if it does not.
 
@@ -260,11 +262,11 @@ This playbook checks if a user exists and creates the user if it does not.
       when: user_data.rc != 0
 ```
 
-### Install Multiple Packages
+### 11. Install Multiple Packages
 
 These examples show how to install multiple packages using either a loop or a list.
 
-#### Using a Loop:
+#### Using a Loop
 
 ```yaml
 - name: Install Multiple Packages with Loop
@@ -281,12 +283,14 @@ These examples show how to install multiple packages using either a loop or a li
         - nginx
 ```
 
-#### Using a List:
+#### Using a List
 
 ```yaml
 - name: Install Multiple Packages as a List
   hosts: all
-  become: yes
+  become
+
+: yes
   tasks:
     - name: Install packages
       ansible.builtin.apt:
@@ -294,7 +298,7 @@ These examples show how to install multiple packages using either a loop or a li
         state: present
 ```
 
-### Create Multiple Users
+### 12. Create Multiple Users
 
 This playbook creates multiple users with different groups.
 
@@ -310,15 +314,13 @@ This playbook creates multiple users with different groups.
         state: "{{ item.state }}"
       loop:
         - { name: "radin", state: "present", group: "sudo" }
-        - { name: "test", state: "present", group: "
-
-dev" }
+        - { name: "test", state: "present", group: "dev" }
         - { name: "test2", state: "present", group: "test_unit" }
 ```
 
-### Import Playbook Files
+### 13. Import Playbook Files
 
-This allows you to split your playbooks into smaller, manageable files and include them as needed.
+You can split your playbooks into smaller, manageable files and include them as needed.
 
 ```yaml
 - name: Nginx Setup
@@ -328,3 +330,45 @@ This allows you to split your playbooks into smaller, manageable files and inclu
   import_playbook: users.yaml
 ```
 
+### 14. Remove `resolv.conf`
+
+This playbook removes the `resolv.conf` file from all specified hosts.
+
+```yaml
+- name: Remove resolv.conf
+  hosts: all
+  become: yes
+  tasks:
+    - name: Remove resolv.conf
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: absent
+      ignore_errors: true  # Ignore errors if the file does not exist
+```
+
+### 15. Enable SSH Login Banner
+
+This playbook enables an SSH login banner by copying a banner file and updating the SSH configuration.
+
+```yaml
+- name: Enable SSH Login Banner
+  hosts: all
+  become: yes
+  tasks:
+    - name: Copy Banner
+      ansible.builtin.copy:
+        src: "issue.net"
+        dest: /etc/issue.net
+      ignore_errors: true  # Ignore errors if the source file does not exist
+
+    - name: Update SSHD Config File for Banner
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^Banner'
+        line: 'Banner /etc/issue.net'
+
+    - name: Restart SSH Service
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+```
