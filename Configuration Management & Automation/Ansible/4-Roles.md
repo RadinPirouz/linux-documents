@@ -1,6 +1,7 @@
+
 # Ansible Roles and Directory Structure
 
-Ansible roles organize automation tasks, variables, files, and other resources into a predefined directory structure, making it easier to reuse and modularize complex playbooks. By breaking down a playbook into roles, you simplify management, enhance reusability, and maintain cleaner, more maintainable code.
+Ansible roles help organize automation tasks, variables, files, and other resources into a structured format. This organization promotes reusability, simplifies management, and results in cleaner, more maintainable code.
 
 ## Creating a Role Directory Structure
 
@@ -19,9 +20,9 @@ This command generates the standard directory structure for an Ansible role, whi
 2. **`<role_name>/`**: Each role directory, named after the role (e.g., `webserver`), contains the following subdirectories:
 
    - **`tasks/`**: Defines the list of tasks to be executed by the role, usually in a `main.yml` file.
-   - **`handlers/`**: Contains handlers that are triggered by tasks. Defined in a `main.yml` file.
+   - **`handlers/`**: Contains handlers that are triggered by tasks, defined in a `main.yml` file.
    - **`defaults/`**: Holds default variables for the role in `defaults/main.yml`.
-   - **`vars/`**: Contains other variables with higher precedence than `defaults`, in `vars/main.yml`.
+   - **`vars/`**: Contains variables with higher precedence than `defaults`, stored in `vars/main.yml`.
    - **`files/`**: Stores static files to be deployed to managed nodes.
    - **`templates/`**: Holds Jinja2 templates for dynamic file generation.
    - **`meta/`**: Contains metadata about the role, including dependencies.
@@ -30,11 +31,11 @@ This command generates the standard directory structure for an Ansible role, whi
    - **`lookup_plugins/`** (Optional): Holds custom lookup plugins.
    - **`filter_plugins/`** (Optional): Stores custom filter plugins.
 
-This structure ensures roles are organized, making them easier to share and reuse.
+This structure ensures roles are well-organized, making them easier to share and reuse.
 
 ## Host-Specific Variables (`host_vars`)
 
-`host_vars` are used to define variables specific to individual hosts (managed nodes). These variables allow for customization of configuration and behavior at the host level.
+`host_vars` define variables specific to individual hosts (managed nodes), allowing customization of configurations and behavior at the host level.
 
 ### Key Points:
 
@@ -52,7 +53,7 @@ max_clients: 200
 
 ## Group-Specific Variables (`group_vars`)
 
-`group_vars` are used to define variables for groups of hosts. This approach reduces repetition and enhances organization when configuring multiple hosts with common settings.
+`group_vars` define variables for groups of hosts, reducing repetition and enhancing organization when configuring multiple hosts with common settings.
 
 ### Key Points:
 
@@ -70,7 +71,7 @@ db_user: "dbadmin"
 
 ## The `files` Directory in Ansible Roles
 
-The `files` directory in an Ansible role stores static files to be copied to managed nodes.
+The `files` directory in an Ansible role stores static files that are copied to managed nodes.
 
 ### Usage:
 
@@ -88,7 +89,7 @@ The `files` directory in an Ansible role stores static files to be copied to man
 
 ## The `templates` Directory in Ansible Roles
 
-The `templates` directory is for storing Jinja2 templates, which are dynamically processed to create files on managed nodes.
+The `templates` directory stores Jinja2 templates, which are dynamically processed to create files on managed nodes.
 
 ### Example:
 
@@ -143,7 +144,7 @@ handlers:
 
 ## Default Variables in Ansible Roles (`defaults` Directory)
 
-The `defaults` directory contains role-specific default variables with the lowest precedence, allowing easy overrides.
+The `defaults` directory contains role-specific default variables with the lowest precedence, allowing them to be easily overridden.
 
 ### Example:
 
@@ -171,6 +172,43 @@ The `tasks` directory is where the main actions of a role are defined. It typica
   import_tasks: configure.yml
 ```
 
-## Reference:
+## Import Role in Project
 
-[Sudoix Ansible Roles Document Github](https://github.com/sudoix/DevOps/blob/main/06-ansible/03-Roles.md)
+You can import multiple roles within a playbook as shown below:
+
+```yaml
+- hosts: all
+  roles:
+    - role: role1
+    - role: role2
+    - role: role3
+  gather_facts: yes
+```
+
+## Copy `resolv.conf` with Jinja Template
+
+Use a Jinja template to dynamically generate the `resolv.conf` file.
+
+### Playbook:
+
+```yaml
+- name: Copy resolv.conf
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: 0644
+```
+
+### Jinja Template (`resolv.conf.j2`):
+
+```j2
+nameserver {{ DNS1 }}
+nameserver {{ DNS2 }}
+```
+
+### Group Variables (`group_vars`):
+
+```yaml
+DNS1: 8.8.8.8
+DNS2: 4.2.2.4
+```
