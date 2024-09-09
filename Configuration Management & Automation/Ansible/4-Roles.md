@@ -1,4 +1,3 @@
-
 # Ansible Roles and Directory Structure
 
 Ansible roles help organize automation tasks, variables, files, and other resources into a structured format. This organization promotes reusability, simplifies management, and results in cleaner, more maintainable code.
@@ -130,14 +129,14 @@ Handlers are tasks triggered by other tasks, typically used to perform actions l
 ```yaml
 # roles/my_role/tasks/main.yml
 - name: Install apache2
-  apt:
+  ansible.builtin.apt:
     name: apache2
     state: present
   notify: restart apache2
 
 handlers:
   - name: restart apache2
-    service:
+    ansible.builtin.service:
       name: apache2
       state: restarted
 ```
@@ -172,7 +171,7 @@ The `tasks` directory is where the main actions of a role are defined. It typica
   import_tasks: configure.yml
 ```
 
-## Import Role in Project
+## Importing Roles in a Playbook
 
 You can import multiple roles within a playbook as shown below:
 
@@ -185,7 +184,44 @@ You can import multiple roles within a playbook as shown below:
   gather_facts: yes
 ```
 
-## Copy `resolv.conf` with Jinja Template
+## Importing Other Tasks
+
+In addition to roles, you can also include specific task files within a playbook:
+
+```yaml
+- name: Basic Setup
+  include_tasks: task_file.yaml
+```
+
+## Working with Tags
+
+Tags allow you to run specific parts of your playbook or roles. They are useful when you want to execute only a subset of tasks.
+
+### Example:
+
+```yaml
+- hosts: all
+  roles:
+    - role: role1
+  gather_facts: yes
+  tags: [install]
+```
+
+### Running Playbooks with Tags
+
+```bash
+ansible-playbook -i inventory.ini main.yml -t install
+```
+
+### Listing Tasks with Tags
+
+To see which tasks will run under a specific tag, use:
+
+```bash
+ansible-playbook -i inventory.ini main.yml -t install --list-tasks
+```
+
+## Copying `resolv.conf` with a Jinja Template
 
 Use a Jinja template to dynamically generate the `resolv.conf` file.
 
@@ -193,7 +229,7 @@ Use a Jinja template to dynamically generate the `resolv.conf` file.
 
 ```yaml
 - name: Copy resolv.conf
-  template:
+  ansible.builtin.template:
     src: resolv.conf.j2
     dest: /etc/resolv.conf
     mode: 0644
@@ -201,7 +237,7 @@ Use a Jinja template to dynamically generate the `resolv.conf` file.
 
 ### Jinja Template (`resolv.conf.j2`):
 
-```j2
+```jinja
 nameserver {{ DNS1 }}
 nameserver {{ DNS2 }}
 ```
@@ -209,6 +245,7 @@ nameserver {{ DNS2 }}
 ### Group Variables (`group_vars`):
 
 ```yaml
+# group_vars/all.yml
 DNS1: 8.8.8.8
 DNS2: 4.2.2.4
 ```

@@ -55,6 +55,12 @@ This command runs the `deploy_nginx.yaml` playbook on the hosts defined in `inve
 - **Handlers**: Special tasks triggered by other tasks using the `notify` directive.
 - **Variables**: Dynamic values that can be reused across tasks and playbooks for flexibility and maintainability.
 
+
+give var in command line
+```bash
+ansible-playbook -i server.ini main.yaml -e "env=2"
+```
+
 ---
 
 ## Example Playbooks
