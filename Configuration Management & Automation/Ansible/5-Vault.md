@@ -56,3 +56,37 @@ ansible-playbook main.yaml -i servers.ini --ask-vault-pass --become
 - **`--become`**: Ensures that the tasks are executed with elevated privileges (e.g., root).
 
 When you run the command, you will be prompted to enter the Vault password to decrypt `secret.yaml` and access the `password` variable.
+
+### 4. Additional Vault Commands
+
+- **Edit an existing encrypted file**:
+
+  ```bash
+  ansible-vault edit secret.yaml
+  ```
+
+- **Rekey (change the Vault password)**:
+
+  ```bash
+  ansible-vault rekey secret.yaml
+  ```
+
+- **View the contents of an encrypted file (without decrypting it)**:
+
+  ```bash
+  ansible-vault view secret.yaml
+  ```
+
+- **Decrypt a Vault file permanently**:
+
+  ```bash
+  ansible-vault decrypt secret.yaml
+  ```
+
+- **Encrypt a previously unencrypted file**:
+
+  ```bash
+  ansible-vault encrypt secret.yaml
+  ```
+
+Ansible Vault provides a powerful way to securely manage sensitive data in your automation processes.
