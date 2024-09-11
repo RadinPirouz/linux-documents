@@ -89,4 +89,5 @@ When you run the command, you will be prompted to enter the Vault password to de
   ansible-vault encrypt secret.yaml
   ```
 
+
 Ansible Vault provides a powerful way to securely manage sensitive data in your automation processes.

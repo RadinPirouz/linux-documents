@@ -1,9 +1,4 @@
-# Docker Commands and Concepts
-
-## Docker Concepts
-
-- **Stateless**: Do not save your data (like Nginx).
-- **Stateful**: Save your data.
+# Docker Commands 
 
 ## Docker Data Directory
 
