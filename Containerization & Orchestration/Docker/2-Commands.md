@@ -1,73 +1,92 @@
-# Docker Commands 
+# Docker Commands Guide
 
 ## Docker Data Directory
 
-- `/var/lib/docker/`: Docker data directory.
-- `/var/lib/docker/containers/`: Container configuration and file directory.
-- `/var/lib/docker/volumes`: Directory where docker volumes are saved.
+- **`/var/lib/docker/`**: The main Docker data directory.
+- **`/var/lib/docker/containers/`**: Directory containing container configurations and files.
+- **`/var/lib/docker/volumes/`**: Directory where Docker volumes are stored.
 
-## Docker Installtion (Ubuntu)
+## Installing Docker on Ubuntu
+
+To install Docker on Ubuntu, run the following commands:
+
 ```bash
-apt update && apt install ca-certificates curl && install -m 0755 -d /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && chmod a+r /etc/apt/keyrings/docker.asc
+# Update the package list and install required packages
+sudo apt update && sudo apt install -y ca-certificates curl 
 
-# Add the repository to Apt sources:
+# Create a directory for Docker's GPG key and download it
+sudo install -m 0755 -d /etc/apt/keyrings 
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc 
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add Docker's official repository to Apt sources
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt update && apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Update the package list and install Docker
+sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
-
-
 
 ## Docker CLI Commands
 
 ### Authentication
 
-- `docker login`: Login to Docker Hub with CLI.
+```bash
+docker login
+```
 
 ### Image Management
 
-- `docker pull <repo-addr>`: Pull a Docker image.
-- `docker images`: Show pulled images.
-- `docker rmi -f <image-id>`: Remove an image.
-- `docker save -o <file-location-and-name> <image-name>`: Save image as an external file.
-- `docker load -i <file-location>`: Import a Docker image.
+```bash
+docker pull <repo-addr>                     # Pull a Docker image from a repository
+docker images                               # List all Docker images on your system
+docker rmi -f <image-id>                    # Force remove a Docker image
+docker save -o <file-location-and-name> <image-name>  # Save a Docker image as a file
+docker load -i <file-location>              # Load a Docker image from a file
+```
 
 ### Container Management
 
-- `docker run <options> <img-name>`: Run a Docker container.
-  - `docker run`: Run Docker (after run exited).
-  - `docker run -it`: Run and give bash to me.
-  - `docker run -dit`: Run and give bash to me and run in the background.
-- `docker exec -it <container-name>`: Go to container shell.
-- `docker rm <container-name>`: Remove Docker container.
-- `docker stop <container-name>`: Stop Docker container.
-- `docker rm -f <container-name>`: Stop and remove Docker container.
-- `docker ps -aq`: Give all Docker container IDs.
-- `docker ps -aq -f status=exited`: Give all Docker container IDs with exited status.
-- `docker container prune`: Remove all stopped containers.
-- `docker commit <container-name> <new-name>`: Make a custom Docker image.
-- `docker inspect <container-name>`: Get all data about container information.
-- `docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container-name>`: Get IP of the container.
-- `docker cp <file_on_local> <container-name>:/<location>`: Copy from local to container.
-- `docker cp <container-name>:/<location> <local-location>`: Copy from container to local.
-- `docker stats`: Monitor Docker stats.
-- `docker run -dit --name server --restart=always ubuntu`: Run container again after restarting the service or main server.
-- `docker build -t <appname>:<appver> <location-of-docker-file>`: Build Docker image from a Dockerfile.
+```bash
+docker run <options> <img-name>             # Run a Docker container with specified options
+docker run                                  # Run a Docker container
+docker run -it                              # Run a container in interactive mode with a terminal
+docker run -dit                             # Run a container in detached mode with a terminal
+docker exec -it <container-name>            # Access the shell of a running container
+docker stop <container-name>                # Stop a running Docker container
+docker rm <container-name>                  # Remove a stopped Docker container
+docker rm -f <container-name>               # Forcefully stop and remove a Docker container
+docker ps -aq                               # List the IDs of all containers (running and stopped)
+docker ps -aq -f status=exited              # List the IDs of all exited containers
+docker container prune                      # Remove all stopped containers
+docker commit <container-name> <new-name>   # Create a new image from a container’s changes
+docker inspect <container-name>             # Display detailed information about a container
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container-name>  # Get the IP address of a container
+docker cp <file_on_local> <container-name>:/<location>  # Copy a file from the local system to a container
+docker cp <container-name>:/<location> <local-location>  # Copy a file from a container to the local system
+docker stats                                # Display a live stream of container resource usage statistics
+docker run -dit --name server --restart=always ubuntu  # Run a container that automatically restarts on server or service restarts
+docker build -t <appname>:<appver> <location-of-dockerfile>  # Build a Docker image from a Dockerfile
+```
 
 ### Volume Management
 
-- `docker volume ls`: List all volumes.
-- `docker volume create <name-of-volume>`: Create a volume for Docker.
-- `docker volume inspect <vol-name>`: Give information about the volume.
-- `docker run -dit --name <container-name> -v <volume-name>:<location-in-container> <img-name>`: Run Docker image and save target location data in volume.
+```bash
+docker volume ls                            # List all Docker volumes
+docker volume create <name-of-volume>       # Create a new Docker volume
+docker volume inspect <vol-name>            # Display detailed information about a volume
+docker run -dit --name <container-name> -v <volume-name>:<location-in-container> <img-name>  # Run a container with a mounted volume
+```
 
 ### Network Management
 
-- `docker network ls`: List all Docker networks.
-- `docker network create <network-name>`: Create a Docker network.
-- `docker network create --subnet <ip>/<subnet> --gateway <gateway-ip> --driver=<network-type> <net-name>`: Create network with custom settings.
-- `docker run -dit --name <container-name> --network <network-name> <img-name>`: Run a container and connect it to a custom network.
-- `docker network connect <network-name> <container-name>`: Connect a container to a custom network.
-- `docker network disconnect <network-name> <container-name>`: Disconnect a network from a container.
+```bash
+docker network ls                           # List all Docker networks
+docker network create <network-name>        # Create a new Docker network
+docker network create --subnet <ip>/<subnet> --gateway <gateway-ip> --driver=<network-type> <net-name>  # Create network with custom settings
+docker run -dit --name <container-name> --network <network-name> <img-name>  # Run a container and connect it to a specified network
+docker network connect <network-name> <container-name>  # Connect an existing container to a network
+docker network disconnect <network-name> <container-name>  # Disconnect a container from a network
+```
