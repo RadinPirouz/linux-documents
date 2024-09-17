@@ -102,6 +102,14 @@ docker run -dit nginx
 - **`docker run -dit`**: Runs a container in detached mode (background).
 
 ```bash
+docker run -dit --restart=always nginx
+```
+
+```bash
+docker run -dit --restart=always nginx
+```
+
+```bash
 docker run -dit --name <container-name> nginx
 ```
 - Creates a named container.
@@ -135,6 +143,12 @@ docker run -dit -p 127.0.0.1:<sv_port_from>-<sv_port_to>:<container_port_from>-<
 docker logs -f
 ```
 - **`docker logs -f`**: Streams logs of a container in real-time.
+
+
+```bash
+docker events
+```
+
 
 ```bash
 docker exec -it <container-name>
@@ -189,6 +203,7 @@ docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container-name>
 ```bash
 docker cp <file_on_local> <container-name>:/<location>
 ```
+`-A` : use for archive mode (keep permmision and )
 - **`docker cp <file_on_local> <container-name>:/<location>`**: Copies files from local machine to the container.
 
 ```bash

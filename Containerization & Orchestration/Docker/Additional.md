@@ -62,3 +62,41 @@
 | **511**     | Server Errors (5xx)     | Network Authentication Required: Client must authenticate to gain network access.     |
 
 ---
+
+# Docker Image Layers
+
+A **Docker image** is composed of multiple layers that work together to create a fully functional container. Each layer represents a step in the build process, and layers are stacked on top of one another to form the complete image.
+
+### Structure of a Docker Image:
+
+1. **BootFS (Boot File System):**
+   - **Description:** This is the bottom-most layer in the Docker image. It includes files and directories needed to boot up a system.
+   - **Function:** It sets up the foundation for the base operating system within the container, similar to the host machine’s `/boot` folder.
+
+2. **Base Image:**
+   - **Description:** The base image is typically a minimal operating system (e.g., Ubuntu, Alpine Linux) or any other image that acts as a starting point for your container.
+   - **Examples:** Ubuntu, Alpine, Debian.
+   - **Function:** Provides the core OS functionalities and dependencies needed for the higher layers.
+
+3. **Libraries:**
+   - **Description:** Libraries required by the applications running in the container.
+   - **Examples:** libc, libssl, or any other standard libraries needed by the applications.
+   - **Function:** Provides necessary functionality for applications, ensuring they can function correctly within the container.
+
+4. **Packages and Applications:**
+   - **Description:** Specific software, tools, or libraries that your application depends on.
+   - **Examples:** vim, curl, git, node.js, or custom software required by your application.
+   - **Function:** These packages allow you to run applications and scripts necessary for the container's purpose.
+
+5. **User Application (Optional):**
+   - **Description:** The main application code that you intend to run within the container.
+   - **Examples:** A web server like Apache, Nginx, or any microservice application.
+   - **Function:** It is the purpose of the container, which could be serving web traffic, processing data, or any other specific task.
+
+### Writable Layer (Container-Specific):
+
+- **Description:** Once a container is created from a Docker image, a writable layer is added on top of the image layers.
+- **Function:** Any changes made during the container's runtime (like creating files or modifying configurations) are stored in this writable layer.
+- **Key Point:** Changes to the writable layer do not impact the underlying image layers.
+
+---
