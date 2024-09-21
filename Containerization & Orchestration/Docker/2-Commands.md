@@ -1,50 +1,48 @@
 # **Docker Commands Guide**
 
-## **1. Docker Data Directory**
-Docker stores its critical files like images, containers, and volumes in specific directories. These are essential for Docker's operation.
+## **1. Docker Data Directories**
+Docker stores essential data, including images, containers, and volumes, in specific directories.
 
-- **`/var/lib/docker/`**: The main directory where Docker stores all its data.
-- **`/var/lib/docker/containers/`**: Contains configuration files for individual containers.
-- **`/var/lib/docker/volumes/`**: Stores data for Docker volumes, enabling persistent storage beyond container lifetimes.
+- **`/var/lib/docker/`**: Main directory for Docker's data, including images, containers, and volumes.
+- **`/var/lib/docker/containers/`**: Stores configuration files for individual containers.
+- **`/var/lib/docker/volumes/`**: Stores data for Docker volumes, which persist beyond the container’s lifecycle.
 
 ---
 
 ## **2. Installing Docker on Ubuntu**
 
-Follow these steps to install Docker on Ubuntu.
-
-### **Step 1: Update package list and install required packages**
+### **Step 1: Update Package List and Install Dependencies**
 ```bash
 sudo apt update && sudo apt install -y ca-certificates curl
 ```
-- **`sudo apt update`**: Refreshes the local package list to ensure you download the latest versions.
-- **`sudo apt install -y ca-certificates curl`**: Installs essential tools like `ca-certificates` and `curl` for secure downloads.
+- **`sudo apt update`**: Refreshes the package list.
+- **`sudo apt install -y ca-certificates curl`**: Installs certificates and `curl` to securely download Docker packages.
 
-### **Step 2: Add Docker’s GPG key**
+### **Step 2: Add Docker’s GPG Key**
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc 
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 ```
-- **`install -m 0755 -d /etc/apt/keyrings`**: Creates the `/etc/apt/keyrings` directory with the appropriate permissions.
-- **`curl -fsSL <url> -o <file>`**: Downloads Docker’s GPG key securely.
-- **`chmod a+r`**: Ensures the GPG key file is readable by all users.
+- **`install -m 0755 -d /etc/apt/keyrings`**: Creates the `/etc/apt/keyrings` directory with appropriate permissions.
+- **`curl -fsSL <url> -o <file>`**: Downloads Docker’s GPG key.
+- **`chmod a+r`**: Grants read permissions for all users to the GPG key.
 
-### **Step 3: Add Docker’s official repository**
+### **Step 3: Add Docker’s Official Repository**
 ```bash
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
-- This command adds Docker's official repository to your Apt sources list.
+- Adds Docker’s repository to the Apt sources list.
 
 ### **Step 4: Install Docker**
 ```bash
 sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 - **`docker-ce`**: Installs Docker Community Edition.
-- **`docker-ce-cli`**: The Docker command-line interface.
+- **`docker-ce-cli`**: Docker command-line interface.
 - **`containerd.io`**: Container runtime.
-- **`docker-buildx-plugin`**: Advanced build functionality.
-- **`docker-compose-plugin`**: Tool for managing multi-container applications.
+- **`docker-buildx-plugin`**: Provides advanced build functionality.
+- **`docker-compose-plugin`**: Manages multi-container applications.
 
 ---
 
@@ -54,235 +52,219 @@ sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io doc
 ```bash
 docker login
 ```
-- **`docker login`**: Prompts for credentials to log in to Docker Hub or a private registry.
+- **`docker login`**: Logs into Docker Hub or a private registry by prompting for credentials.
 
 ### **3.2 Image Management**
-```bash
-docker pull <repo-addr>
-```
-- **`docker pull <repo-addr>`**: Downloads an image from the specified repository.
+- **Download an image:**
+  ```bash
+  docker pull <repo-addr>
+  ```
+  - Downloads an image from a repository.
 
-```bash
-docker images
-```
-- **`docker images`**: Lists all images on your system.
+- **List images:**
+  ```bash
+  docker images
+  ```
+  - Displays all available images.
 
-```bash
-docker rmi -f <image-id>
-```
-- **`docker rmi -f <image-id>`**: Forcefully removes the specified image.
+- **Remove an image:**
+  ```bash
+  docker rmi -f <image-id>
+  ```
+  - Forcefully removes a specific image.
 
-```bash
-docker save -o <file-location-and-name> <image-name>
-```
-- **`docker save -o <file-location>`**: Saves an image as a `.tar` file.
+- **Save an image as a `.tar` file:**
+  ```bash
+  docker save -o <file-location-and-name> <image-name>
+  ```
 
-```bash
-docker load -i <file-location>
-```
-- **`docker load -i <file-location>`**: Loads an image from a `.tar` file.
-
----
+- **Load an image from a `.tar` file:**
+  ```bash
+  docker load -i <file-location>
+  ```
 
 ### **3.3 Container Management**
+- **Run a container:**
+  ```bash
+  docker run <options> <image-name>
+  ```
 
-```bash
-docker run <options> <img-name>
-```
-- **`docker run <img-name>`**: Runs a container from the specified image.
+- **Run an interactive container with a terminal:**
+  ```bash
+  docker run -it <image-name>
+  ```
 
-```bash
-docker run -it nginx
-```
-- **`docker run -it`**: Runs a container interactively with a terminal.
+- **Run a container in detached mode:**
+  ```bash
+  docker run -dit <image-name>
+  ```
 
-```bash
-docker run -dit nginx
-```
-- **`docker run -dit`**: Runs a container in detached mode (background).
+- **Set a container to always restart:**
+  ```bash
+  docker run -dit --restart=always <image-name>
+  ```
 
-```bash
-docker run -dit --restart=always nginx
-```
+- **Name a container:**
+  ```bash
+  docker run -dit --name <container-name> <image-name>
+  ```
 
-```bash
-docker run -dit --restart=always nginx
-```
+- **Assign a hostname:**
+  ```bash
+  docker run -dit --hostname=<hostname> <image-name>
+  ```
 
-```bash
-docker run -dit --name <container-name> nginx
-```
-- Creates a named container.
+- **Set environment variables:**
+  ```bash
+  docker run -dit -e var1=data --name <container-name> --hostname=<hostname> <image-name>
+  ```
 
-```bash
-docker run -dit --hostname=<hostname-sv> nginx
-```
-- Assigns a hostname to the container.
+- **Map host and container ports:**
+  ```bash
+  docker run -dit -p <host-port>:<container-port> <image-name>
+  ```
 
-```bash
-docker run -dit -e var1=data --name <container-name> --hostname=<hostname-sv> nginx
-```
-- Sets environment variables and runs a container with a custom name and hostname.
+- **Run a container with memory and CPU limits:**
+  ```bash
+  docker run -dit --name nginx --memory-reservation 150m --memory 500m nginx
+  ```
+  - Limits memory reservation to 150MB and usage to a maximum of 500MB.
 
-```bash
-docker run -dit -p <sv_port>:<container_port>  nginx
-```
-- Maps a host port to a container port.
+  ```bash
+  docker run -dit --name nginx --cpus 2 --cpu-shares 100 nginx
+  ```
+  - Limits the container to 2 CPUs.
 
-```bash
-docker run -dit -p <sv_port_from>-<sv_port_to>:<container_port_from>-<container_port_to>  nginx
-```
-- Maps a range of ports between host and container.
+- **Stream container logs in real-time:**
+  ```bash
+  docker logs -f <container-name>
+  ```
 
-```bash
-docker run -dit -p 127.0.0.1:<sv_port_from>-<sv_port_to>:<container_port_from>-<container_port_to>  nginx
-```
-- Binds container ports to specific IP addresses on the host.
+- **Access a container’s terminal:**
+  ```bash
+  docker exec -it <container-name> /bin/bash
+  ```
 
-```bash
-docker logs -f
-```
-- **`docker logs -f`**: Streams logs of a container in real-time.
+- **Stop a container:**
+  ```bash
+  docker stop <container-name>
+  ```
 
+- **Remove a container:**
+  ```bash
+  docker rm <container-name>
+  ```
 
-```bash
-docker events
-```
+- **Forcefully remove a running container:**
+  ```bash
+  docker rm -f <container-name>
+  ```
 
+- **List all container IDs (including stopped):**
+  ```bash
+  docker ps -aq
+  ```
 
-```bash
-docker exec -it <container-name>
-```
-- **`docker exec -it <container-name>`**: Opens an interactive terminal inside a running container.
+- **Prune stopped containers:**
+  ```bash
+  docker container prune
+  ```
 
-```bash
-docker stop <container-name>
-```
-- **`docker stop <container-name>`**: Stops a running container.
+- **Commit a container to an image:**
+  ```bash
+  docker commit <container-name> <new-image-name>
+  ```
 
-```bash
-docker rm <container-name>
-```
-- **`docker rm <container-name>`**: Removes a stopped container.
+- **Inspect container details:**
+  ```bash
+  docker inspect <container-name>
+  ```
 
-```bash
-docker rm -f <container-name>
-```
-- **`docker rm -f <container-name>`**: Forcefully stops and removes a running container.
+- **Copy files between host and container:**
+  ```bash
+  docker cp <file-on-local> <container-name>:/<container-path>
+  ```
 
-```bash
-docker ps -aq
-```
-- **`docker ps -aq`**: Lists all container IDs, including stopped ones.
+  ```bash
+  docker cp <container-name>:/<container-path> <local-path>
+  ```
 
-```bash
-docker ps -aq -f status=exited
-```
-- **`docker ps -aq -f status=exited`**: Lists only the stopped container IDs.
+- **View real-time container resource usage:**
+  ```bash
+  docker stats
+  ```
 
-```bash
-docker container prune
-```
-- **`docker container prune`**: Removes all stopped containers.
-
-```bash
-docker commit <container-name> <new-image-name>
-```
-- **`docker commit <container-name> <new-image-name>`**: Creates a new image from a running or stopped container.
-
-```bash
-docker inspect <container-name>
-```
-- **`docker inspect <container-name>`**: Displays detailed information about a container.
-
-```bash
-docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container-name>
-```
-- **`docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container-name>`**: Retrieves the container's IP address.
-
-```bash
-docker cp <file_on_local> <container-name>:/<location>
-```
-`-A` : use for archive mode (keep permmision and )
-- **`docker cp <file_on_local> <container-name>:/<location>`**: Copies files from local machine to the container.
-
-```bash
-docker cp <container-name>:/<location> <local-location>
-```
-- **`docker cp <container-name>:/<location> <local-location>`**: Copies files from the container to the local machine.
-
-```bash
-docker stats
-```
-- **`docker stats`**: Displays a real-time stream of resource usage for all running containers.
-
-```bash
-docker build -t <app-name>:<app-ver> <path-to-dockerfile>
-```
-- **`docker build -t <app-name>:<app-ver> <path-to-dockerfile>`**: Builds a Docker image using a Dockerfile.
+- **Build an image from a Dockerfile:**
+  ```bash
+  docker build -t <app-name>:<app-version> <path-to-dockerfile>
+  ```
 
 ---
 
 ## **4. Volume Management**
+Volumes store data that persists even when a container is deleted.
 
-```bash
-docker volume ls
-```
-- **`docker volume ls`**: Lists all Docker volumes.
+- **List all volumes:**
+  ```bash
+  docker volume ls
+  ```
 
-```bash
-docker volume create <volume-name>
-```
-- **`docker volume create <volume-name>`**: Creates a new volume.
+- **Create a volume:**
+  ```bash
+  docker volume create <volume-name>
+  ```
 
-```bash
-docker volume inspect <volume-name>
-```
-- **`docker volume inspect <volume-name>`**: Shows detailed information about a volume.
+- **Inspect a volume:**
+  ```bash
+  docker volume inspect <volume-name>
+  ```
 
-```bash
-docker run -dit --name <container-name> -v <volume-name>:<container-location> <image-name>
-```
-- **`docker run -v <volume-name>:<container-location>`**: Attaches a volume to a container.
+- **Mount a volume to a container:**
+  ```bash
+  docker run -dit --name <container-name> -v <volume-name>:<container-path> <image-name>
+  ```
+
+- **Mount a file with read-only access:**
+  ```bash
+  docker run -dit --name nginx -v /etc/resolv.conf:/etc/resolv.conf:ro nginx
+  ```
+
+- **Mount temporary filesystem in memory:**
+  ```bash
+  docker run -dit --name nginx --tmpfs /opt:100M nginx
+  ```
 
 ---
 
 ## **5. Network Management**
+Docker networks allow communication between containers.
 
-```bash
-docker network ls
-```
-- **`docker network ls`**: Lists all Docker networks.
+- **List all networks:**
+  ```bash
+  docker network ls
+  ```
 
-```bash
-docker network create <network-name>
-```
-- **`docker network create <network-name>`**: Creates a new Docker network.
+- **Create a network:**
+  ```bash
+  docker network create <network-name>
+  ```
 
-```bash
-docker network create --subnet <ip>/<subnet> --gateway <gateway-ip> --driver=<network-type> <network-name>
-```
-- **`docker network create --subnet <ip>/<subnet> --gateway <gateway-ip> --driver=<network-type> <network-name>`**: Creates a custom network with specified settings.
+- **Create a custom network with subnet and gateway:**
+  ```bash
+  docker network create --subnet <subnet> --gateway <gateway-ip> --driver=<network-type> <network-name>
+  ```
 
-```bash
-docker run -dit --name <container-name> --network <network-name> <image-name>
-```
-- **`docker run --network <network-name>`**: Runs a container on a specified network.
+- **Run a container on a specific network:**
+  ```bash
+  docker run -dit --name <container-name> --network <network-name> <image-name>
+  ```
 
-```bash
-docker network connect <network-name> <container-name>
-```
+- **Connect a running container to a network:**
+  ```bash
+  docker network connect <network-name> <container-name>
+  ```
 
-
-- **`docker network connect <network-name> <container-name>`**: Connects an existing container to a network.
-
-```bash
-docker network inspect <network-name>
-```
-- **`docker network inspect <network-name>`**: Displays detailed information about a network.
-
-```bash
-docker network disconnect <network-name> <container-name>
-```
-- **`docker network disconnect <network-name> <container-name>`**: Disconnects a container from a network.
-
+- **Disconnect a container from a network:**
+  ```bash
+  docker network disconnect <network-name> <container-name>
+  ```
