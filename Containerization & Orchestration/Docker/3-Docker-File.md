@@ -125,7 +125,11 @@ docker build -t <app-name> <path-to-dockerfile>
 
 - If your file is named something other than `Dockerfile` (e.g., `CustomDockerfile`):
   ```bash
-  docker build -t app-test -f CustomDockerfile .
+  docker build -t app-test -f <CustomDockerfile> .
+  ```
+- If you want build file without use cache 
+  ```bash
+    docker build -t app-test:v1 -f <Custom-Dir> . --no-cache
   ```
 
 #### Explanation:
