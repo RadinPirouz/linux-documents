@@ -268,3 +268,18 @@ Docker networks allow communication between containers.
   ```bash
   docker network disconnect <network-name> <container-name>
   ```
+
+  ---
+
+## **6. System Commands**
+
+- **Show Docker Disk usage:**
+  ```bash
+    docker system df 
+  ```
+- **Remove Unuse Cache,Container And More**
+- ```bash
+-   docker system prune
+- ```
+-
+-
