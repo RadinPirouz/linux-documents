@@ -31,6 +31,12 @@ If you need to use a specific SSH key for your Git operations, you can configure
 git config --add --local core.sshCommand 'ssh -i <PATH_TO_SSH_KEY>'
 ```
 
+For Clone With Custom SSH Key Use:
+```bash
+git -c core.sshCommand="ssh -i <key-path>" clone host:repo 
+```
+
+
 *Replace `<PATH_TO_SSH_KEY>` with the actual path to your SSH key file.*
 
 ## Creating and Managing a Local Git Repository
