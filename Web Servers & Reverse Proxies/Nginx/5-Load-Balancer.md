@@ -71,7 +71,7 @@ Load balancing with Nginx helps distribute incoming traffic across multiple back
 
 3. **Reload Nginx** to apply the new configuration:
    ```bash
-   sudo systemctl reload nginx
+   sudo nginx -s reload
    ```
 
 ---
