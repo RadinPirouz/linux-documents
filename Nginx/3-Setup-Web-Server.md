@@ -46,7 +46,7 @@ This guide covers the steps to configure Nginx as a basic web server to serve st
 1. **Create a Server Block Configuration File**
    Nginx server blocks (similar to Apache virtual hosts) allow you to host multiple sites on the same server. Create a new configuration file for your site.
    ```bash
-   sudo nano /etc/nginx/sites-available/example.com
+   sudo vim /etc/nginx/sites-available/example.com
    ```
 
 2. **Add Server Block Configuration**
