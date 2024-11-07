@@ -77,7 +77,7 @@ A reverse proxy can forward client requests to multiple backend servers, helping
 
 3. **Reload Nginx** to apply the changes:
    ```bash
-   sudo systemctl reload nginx
+   nginx -s reload
    ```
 
 ---
