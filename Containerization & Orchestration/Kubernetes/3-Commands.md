@@ -1,8 +1,12 @@
+Below is an improved version of your Kubernetes Command Reference. This revision enhances clarity, fixes typos, organizes related commands into logical sections, and standardizes formatting for readability.
 
+---
 
 # Kubernetes Command Reference
 
-This document provides a reference for common `kubectl` commands used for managing Kubernetes clusters. Use the examples and explanations below to help manage nodes, namespaces, pods, deployments, and more.
+This document provides a concise reference for common `kubectl` commands used to manage Kubernetes clusters. Whether you’re managing nodes, namespaces, pods, deployments, or autoscaling, the examples below will help you perform everyday tasks with ease.
+
+---
 
 ## Table of Contents
 
@@ -10,6 +14,9 @@ This document provides a reference for common `kubectl` commands used for managi
   - [Table of Contents](#table-of-contents)
   - [General Commands](#general-commands)
   - [Node Management](#node-management)
+    - [Listing Nodes](#listing-nodes)
+    - [Labeling Nodes](#labeling-nodes)
+    - [Node Maintenance (Cordon/Drain)](#node-maintenance-cordondrain)
   - [Namespace Management](#namespace-management)
   - [Pod Management](#pod-management)
     - [Listing Pods](#listing-pods)
@@ -18,9 +25,10 @@ This document provides a reference for common `kubectl` commands used for managi
   - [API Resources and Documentation](#api-resources-and-documentation)
   - [Logs and Pod Information](#logs-and-pod-information)
   - [Applying YAML Files](#applying-yaml-files)
-  - [Managing Nodes and Labels](#managing-nodes-and-labels)
   - [Viewing Cluster Resources](#viewing-cluster-resources)
   - [ReplicaSet and Deployment Management](#replicaset-and-deployment-management)
+    - [Scaling and Rollouts](#scaling-and-rollouts)
+    - [Autoscaling](#autoscaling)
   - [Additional Information](#additional-information)
 
 ---
@@ -28,6 +36,8 @@ This document provides a reference for common `kubectl` commands used for managi
 ## General Commands
 
 - **List API Resources**
+
+  Display all available API resources along with their short names:
 
   ```bash
   kubectl api-resources
@@ -37,34 +47,65 @@ This document provides a reference for common `kubectl` commands used for managi
 
 ## Node Management
 
-- **Show all nodes**
+### Listing Nodes
+
+- **Show All Nodes**
 
   ```bash
-  kubectl get node
+  kubectl get nodes
   ```
 
-- **Set a label on a node**
+### Labeling Nodes
+
+- **Set a Custom Label on a Node**
 
   ```bash
-  kubectl label nodes <node-name> kubernetes.io/<label-key>=<label-value>
+  kubectl label node <node-name> kubernetes.io/<label-key>=<label-value>
   ```
+
+  > **Note:** Replace `<node-name>`, `<label-key>`, and `<label-value>` with your desired values.
+
+### Node Maintenance (Cordon/Drain)
+
+- **Cordon a Node**  
+  Prevent new pods from being scheduled on the node.
+
+  ```bash
+  kubectl cordon <node-name>
+  ```
+
+- **Uncordon a Node**  
+  Mark the node as schedulable again.
+
+  ```bash
+  kubectl uncordon <node-name>
+  ```
+
+- **Drain a Node**  
+  Evict all pods from the node (excluding those managed by DaemonSets).
+
+  ```bash
+  kubectl drain <node-name> --ignore-daemonsets --delete-local-data
+  ```
+
+  > **Warning:** Draining a node will evict running pods. Ensure this action is planned to avoid service disruption.
 
 ---
 
 ## Namespace Management
 
-- **List all namespaces**
+- **List All Namespaces**
 
   ```bash
   kubectl get namespaces
-  # or the abbreviated version:
+  # Or use the shorthand:
   kubectl get ns
   ```
 
-- **Create a custom namespace**
+- **Create a New Namespace**
 
   ```bash
-  kubectl create ns <namespace-name>
+  kubectl create namespace <namespace-name>
   ```
 
 ---
@@ -73,104 +114,103 @@ This document provides a reference for common `kubectl` commands used for managi
 
 ### Listing Pods
 
-- **List pods in the default namespace**
+- **List Pods in the Default Namespace**
 
   ```bash
-  kubectl get pod
+  kubectl get pods
   ```
 
-- **List pods with detailed information (wide output) in the default namespace**
+- **List Pods with Detailed Information (Wide Output)**
 
   ```bash
-  kubectl get pod -o wide
+  kubectl get pods -o wide
   ```
 
-- **List pods with detailed information in a specific namespace**
+- **List Pods in a Specific Namespace**
 
   ```bash
-  kubectl get pod -o wide -n <namespace-name>
+  kubectl get pods -o wide -n <namespace-name>
   ```
 
 ### Running a Pod
 
-- **Run a new pod**
+> **Note:** While `kubectl run` is a versatile command, note that in recent Kubernetes versions it is primarily used for running single pods (not deployments). For more complex configurations, consider using YAML manifests.
 
-  Use the following command structure to run a pod with various options:
+- **Basic Example:**
 
   ```bash
-  kubectl run <pod-name> <switch> {
-    --image=<image-name>,                # Container image to use
-    --port=<port-number>,                # Port that the container exposes
-    -n <namespace-name>,                 # Namespace in which to run the pod
-    --env="KEY=VALUE",                   # Environment variables for the container
-    --command,                           # Treat the following arguments as the command
-    --replicas=<number>,                 # Number of pod replicas to create
-    --labels="key=value,key2=value2",    # Labels to assign to the pod(s)
-    --dry-run=client,                    # Print the object without creating it
-    --restart=<Always|OnFailure|Never>,  # Pod restart policy
-    --overrides='<json>',                # JSON override for the generated object
-    --image-pull-policy=<policy>,        # Image pull policy (Always, IfNotPresent, Never)
-    --limits=cpu=<cpu>,memory=<memory>,   # Resource limits for the container
-    --requests=cpu=<cpu>,memory=<memory>  # Resource requests for the container
-  }
+  kubectl run <pod-name> --image=<image-name> --port=<port-number> -n <namespace-name>
   ```
 
-  - **Example:**
+- **Advanced Example with Multiple Options:**
 
-    ```bash
-    kubectl run mypod --image=nginx --port=80 -n mynamespace \
-      --env="ENV_VAR_NAME=VALUE" --command -- nginx -g "daemon off;" \
-      --replicas=3 --labels="app=myapp,env=prod" --dry-run=client \
-      --restart=Always --overrides='{"spec": {"containers": [{"name": "nginx", "image": "nginx"}]}}' \
-      --image-pull-policy=IfNotPresent --limits=cpu=100m,memory=256Mi \
-      --requests=cpu=50m,memory=128Mi
-    ```
+  ```bash
+  kubectl run mypod --image=nginx --port=80 -n mynamespace \
+    --env="ENV_VAR_NAME=VALUE" --command -- nginx -g "daemon off;" \
+    --restart=Always --dry-run=client \
+    --labels="app=myapp,env=prod" \
+    --limits=cpu=100m,memory=256Mi --requests=cpu=50m,memory=128Mi
+  ```
+
+  **Common Options Explained:**
+
+  - `--image`: Container image to use.
+  - `--port`: Port exposed by the container.
+  - `-n` or `--namespace`: Namespace in which to run the pod.
+  - `--env`: Set environment variables.
+  - `--command`: Treat the following arguments as the command to run.
+  - `--restart`: Pod restart policy (`Always`, `OnFailure`, or `Never`).
+  - `--labels`: Assign labels to the pod.
+  - `--dry-run`: Validate the command without creating the pod.
+  - `--limits` and `--requests`: Define resource limits and requests for the container.
 
 ### Deleting a Pod
 
-- **Delete a pod in a custom namespace**
+- **Delete a Pod in a Specific Namespace**
 
   ```bash
-  kubectl delete pod -n <namespace-name> <pod-name>
+  kubectl delete pod <pod-name> -n <namespace-name>
   ```
 
 ---
 
 ## API Resources and Documentation
 
-- **Get documentation for an API resource**
+- **Get Detailed Documentation for an API Resource**
 
   ```bash
   kubectl explain <api-resource-name>
   ```
 
-  - *Example:*
+  *Example:*
 
-    ```bash
-    kubectl explain pod
-    ```
+  ```bash
+  kubectl explain pod
+  ```
 
 ---
 
 ## Logs and Pod Information
 
-- **Stream logs for a running pod**
+- **Stream Logs for a Running Pod**
 
   ```bash
   kubectl logs -f -n <namespace-name> <pod-name>
   ```
 
-- **Get detailed state and log information for a pod**
+- **Get Detailed Information About a Pod**
 
   ```bash
-  kubectl describe pod -n <namespace-name> <pod-name>
+  kubectl describe pod <pod-name> -n <namespace-name>
   ```
 
 ---
 
 ## Applying YAML Files
 
-- **Apply configuration from a YAML file to a specific namespace**
+- **Apply a Configuration from a YAML File**
+
+  Apply a YAML configuration to a specific namespace:
 
   ```bash
   kubectl apply -f <yaml-file> -n <namespace-name>
@@ -178,59 +218,65 @@ This document provides a reference for common `kubectl` commands used for managi
 
 ---
 
-## Managing Nodes and Labels
-
-- **Label a node with a custom key-value pair**
-
-  ```bash
-  kubectl label nodes <node-name> kubernetes.io/<label-key>=<label-value>
-  ```
-
----
-
 ## Viewing Cluster Resources
 
-- **Display all resources loaded in a namespace**
+- **Display All Resources in a Namespace**
 
   ```bash
   kubectl get all -n <namespace-name>
   ```
 
-- **Display replica sets, pods, and deployments in a specific namespace**
+- **Display ReplicaSets, Pods, and Deployments in a Specific Namespace**
 
   ```bash
-  kubectl get rs,pod,deployment -n <namespace-name>
+  kubectl get rs,pods,deployments -n <namespace-name>
   ```
 
 ---
 
 ## ReplicaSet and Deployment Management
 
+### Scaling and Rollouts
+
 - **Scale a ReplicaSet**
 
   ```bash
-  kubectl scale rs <replicaset-name> -n <namespace-name> --replicas=<count>
+  kubectl scale rs <replicaset-name> --replicas=<count> -n <namespace-name>
   ```
 
-- **View rollout history of a deployment**
+- **View Rollout History of a Deployment**
 
   ```bash
-  kubectl rollout history deployment -n <namespace-name> <deployment-name>
+  kubectl rollout history deployment <deployment-name> -n <namespace-name>
   ```
 
-- **View details of a specific revision in a deployment's rollout history**
+- **View Details of a Specific Revision**
 
   ```bash
-  kubectl rollout history deployment -n <namespace-name> <deployment-name> --revision <number>
+  kubectl rollout history deployment <deployment-name> -n <namespace-name> --revision=<number>
   ```
 
-- **Roll back a deployment to a specific revision**
+- **Roll Back a Deployment to a Specific Revision**
 
   ```bash
-  kubectl rollout undo deployment -n <namespace-name> <deployment-name> --to-revision=<number>
+  kubectl rollout undo deployment <deployment-name> -n <namespace-name> --to-revision=<number>
   ```
 
-  > **Note:** The command for rolling back to a specific revision is `kubectl rollout undo` rather than using `--to-revision` with `kubectl rollout history`.
+### Autoscaling
+
+- **Autoscale a Deployment**
+
+  Automatically scale a deployment based on CPU utilization:
+
+  ```bash
+  kubectl autoscale deployment <deployment-name> -n <namespace-name> --cpu-percent=<target-cpu-percentage> --min=<min-pods> --max=<max-pods>
+  ```
+
+- **View Horizontal Pod Autoscalers (HPA)**
+
+  ```bash
+  kubectl get hpa -n <namespace-name>
+  ```
 
 ---
 
@@ -238,6 +284,4 @@ This document provides a reference for common `kubectl` commands used for managi
 
 - **Static Manifest Files**
 
-  All YAML files located under `/etc/kubernetes/manifests/` are automatically loaded after a server reboot.
-
----
+  Any YAML files placed in `/etc/kubernetes/manifests/` are automatically loaded when the kubelet starts (for example, after a server reboot).
