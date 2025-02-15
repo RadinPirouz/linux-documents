@@ -1,10 +1,10 @@
-Below is an improved version of your Kubernetes Command Reference. This revision enhances clarity, fixes typos, organizes related commands into logical sections, and standardizes formatting for readability.
+Below is an enhanced version of your Kubernetes Command Reference. This revision further refines the structure, improves consistency, and adds a few extra sections for clarity and ease of use.
 
 ---
 
 # Kubernetes Command Reference
 
-This document provides a concise reference for common `kubectl` commands used to manage Kubernetes clusters. Whether you’re managing nodes, namespaces, pods, deployments, or autoscaling, the examples below will help you perform everyday tasks with ease.
+This guide provides a concise reference for common `kubectl` commands used to manage Kubernetes clusters. Whether you’re managing nodes, namespaces, pods, deployments, or autoscaling, the examples below will help you perform everyday tasks with confidence.
 
 ---
 
@@ -22,21 +22,21 @@ This document provides a concise reference for common `kubectl` commands used to
     - [Listing Pods](#listing-pods)
     - [Running a Pod](#running-a-pod)
     - [Deleting a Pod](#deleting-a-pod)
-  - [API Resources and Documentation](#api-resources-and-documentation)
-  - [Logs and Pod Information](#logs-and-pod-information)
+  - [API Resources \& Documentation](#api-resources--documentation)
+  - [Logs \& Pod Information](#logs--pod-information)
   - [Applying YAML Files](#applying-yaml-files)
   - [Viewing Cluster Resources](#viewing-cluster-resources)
-  - [ReplicaSet and Deployment Management](#replicaset-and-deployment-management)
+  - [ReplicaSet \& Deployment Management](#replicaset--deployment-management)
     - [Scaling and Rollouts](#scaling-and-rollouts)
     - [Autoscaling](#autoscaling)
+  - [Port Forwarding](#port-forwarding)
   - [Additional Information](#additional-information)
 
 ---
 
 ## General Commands
 
-- **List API Resources**
-
+- **List API Resources**  
   Display all available API resources along with their short names:
 
   ```bash
@@ -88,7 +88,7 @@ This document provides a concise reference for common `kubectl` commands used to
   kubectl drain <node-name> --ignore-daemonsets --delete-local-data
   ```
 
-  > **Warning:** Draining a node will evict running pods. Ensure this action is planned to avoid service disruption.
+  > **Warning:** Draining a node will evict running pods. Ensure that you plan this action to avoid service disruption.
 
 ---
 
@@ -98,7 +98,7 @@ This document provides a concise reference for common `kubectl` commands used to
 
   ```bash
   kubectl get namespaces
-  # Or use the shorthand:
+  # Or the shorthand:
   kubectl get ns
   ```
 
@@ -134,7 +134,7 @@ This document provides a concise reference for common `kubectl` commands used to
 
 ### Running a Pod
 
-> **Note:** While `kubectl run` is a versatile command, note that in recent Kubernetes versions it is primarily used for running single pods (not deployments). For more complex configurations, consider using YAML manifests.
+> **Note:** The `kubectl run` command is best suited for running single pods. For more complex deployments, consider using YAML manifests.
 
 - **Basic Example:**
 
@@ -174,7 +174,7 @@ This document provides a concise reference for common `kubectl` commands used to
 
 ---
 
-## API Resources and Documentation
+## API Resources & Documentation
 
 - **Get Detailed Documentation for an API Resource**
 
@@ -190,7 +190,7 @@ This document provides a concise reference for common `kubectl` commands used to
 
 ---
 
-## Logs and Pod Information
+## Logs & Pod Information
 
 - **Stream Logs for a Running Pod**
 
@@ -234,7 +234,7 @@ This document provides a concise reference for common `kubectl` commands used to
 
 ---
 
-## ReplicaSet and Deployment Management
+## ReplicaSet & Deployment Management
 
 ### Scaling and Rollouts
 
@@ -264,8 +264,7 @@ This document provides a concise reference for common `kubectl` commands used to
 
 ### Autoscaling
 
-- **Autoscale a Deployment**
-
+- **Autoscale a Deployment**  
   Automatically scale a deployment based on CPU utilization:
 
   ```bash
@@ -280,8 +279,24 @@ This document provides a concise reference for common `kubectl` commands used to
 
 ---
 
+## Port Forwarding
+
+Sometimes you need to access a service or pod directly from your local machine. Use the following command to forward a port:
+
+```bash
+kubectl port-forward -n <namespace-name> svc/<service-name> <local-port>:<target-port>
+```
+
+> **Example:** Forward local port 8080 to port 80 of the service named `my-service` in the `mynamespace` namespace:
+>
+> ```bash
+> kubectl port-forward -n mynamespace svc/my-service 8080:80
+> ```
+
+---
+
 ## Additional Information
 
-- **Static Manifest Files**
-
+- **Static Manifest Files**  
   Any YAML files placed in `/etc/kubernetes/manifests/` are automatically loaded when the kubelet starts (for example, after a server reboot).
+
