@@ -1,7 +1,3 @@
-Below is an enhanced version of your Kubernetes Command Reference. This revision further refines the structure, improves consistency, and adds a few extra sections for clarity and ease of use.
-
----
-
 # Kubernetes Command Reference
 
 This guide provides a concise reference for common `kubectl` commands used to manage Kubernetes clusters. Whether you’re managing nodes, namespaces, pods, deployments, or autoscaling, the examples below will help you perform everyday tasks with confidence.
