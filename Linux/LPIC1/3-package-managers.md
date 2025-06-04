@@ -47,29 +47,3 @@ Created by external developers or organizations. Use with caution and verify tru
 ## 🌍 Package Mirrors
 
 Mirrors are alternative download sources for package repositories, often closer geographically for faster updates.
-
-To sync with package mirrors and get the latest updates:
-
-```bash
-sudo apt update
-```
-
----
-
-## 🔧 Common `apt` Commands
-
-| Command                  | Description                           |
-|--------------------------|---------------------------------------|
-| `apt update`             | Refresh package lists                 |
-| `apt upgrade`            | Upgrade all installed packages        |
-| `apt list`               | List packages                         |
-| `apt show <package>`     | Show details of a package             |
-| `apt install <package>`  | Install a new package                 |
-| `apt reinstall <package>`| Reinstall an existing package         |
-| `apt remove <package>`   | Remove a package (keep config files)  |
-| `apt purge <package>`    | Remove package **and** config files   |
-| `apt-cache search <term>`| Search for a package                  |
-| `apt autoremove`         | Remove unused dependencies            |
-
-> 🔐 Use `sudo` before these commands when required.
-
