@@ -79,4 +79,5 @@ The **Control Plane** is the core management component of a Kubernetes cluster. 
 - **Worker (none)**  
   These nodes run application workloads and do not participate in control decisions.
 
----
+
+image pull policy in kubernetes:
