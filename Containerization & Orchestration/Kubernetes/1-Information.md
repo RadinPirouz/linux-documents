@@ -81,3 +81,7 @@ The **Control Plane** is the core management component of a Kubernetes cluster. 
 
 
 image pull policy in kubernetes:
+
+
+example of all work loads:
+https://k8s-examples.container-solutions.com/
