@@ -106,19 +106,6 @@ This guide provides a concise reference for common `kubectl` commands used to ma
 
 ---
 
-## Port Forwarding
-
-Sometimes you need to access a service or pod directly from your local machine. Use the following command to forward a port:
-
-```bash
-kubectl port-forward -n <namespace-name> svc/<service-name> <local-port>:<target-port>
-```
-
-> **Example:** Forward local port 8080 to port 80 of the service named `my-service` in the `mynamespace` namespace:
->
-> ```bash
-> kubectl port-forward -n mynamespace svc/my-service 8080:80
-> ```
 
 ---
 
