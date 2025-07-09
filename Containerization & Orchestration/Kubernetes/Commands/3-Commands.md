@@ -115,3 +115,7 @@ This guide provides a concise reference for common `kubectl` commands used to ma
   Any YAML files placed in `/etc/kubernetes/manifests/` are automatically loaded when the kubelet starts (for example, after a server reboot).
 
 
+
+```bash
+kubectl cp -n <ns> <pod-name>:dir/ ./
+```
