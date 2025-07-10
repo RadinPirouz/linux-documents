@@ -1,5 +1,4 @@
-
-# 🖥️ Bash Opreators
+# 🖥️ Bash Operators
 
 A quick reference guide to essential bash command operators and their usage.
 
@@ -53,6 +52,18 @@ echo "Hi" > file1 ; cat file1
 
 ---
 
+## `|` — **Pipe Operator**
+
+Takes the **output of the command on the left** and **uses it as input for the command on the right**.
+
+```bash
+ls -l | grep "txt"
+```
+
+🔗 Passes the output of `ls -l` to `grep "txt"` to filter and display only files containing "txt".
+
+---
+
 ## `*` — **Wildcard (All Matching Files)**
 
 Matches **all files** that meet the pattern.
@@ -78,4 +89,3 @@ cat file[1,2,3]
 ```bash
 cat file1 file2 file3
 ```
-
