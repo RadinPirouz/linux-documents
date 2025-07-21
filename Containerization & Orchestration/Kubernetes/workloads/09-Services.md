@@ -48,6 +48,13 @@ kubectl get ep -n <namespace>
 kubectl get svc -n <namespace>
 ```
 
+
+```bash
+kubectl expose deployment web-server-dep -n dev --port 80 
+```
+
+
+
 ---
 
 ## 🔁 **Port Forwarding**
@@ -99,3 +106,21 @@ spec:
 > 🔍 **Note:** The `selector` must match the labels of the target Pods.
 > 🧠 **Tip:** Use `kubectl describe svc <service-name>` to inspect the service and verify connectivity.
 
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: ns
+  labels:
+    app: web-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+```
