@@ -108,18 +108,6 @@ spec:
             type: DirectoryOrCreate
 ```
 
-```yaml
-spec:
-  containers:
-    volumeMounts:
-      - name: nginx-log
-        mountPath: /var/log/nginx
-
-volumes:
-  - name: nginx-log
-    emptyDir:
-      sizeLimit: 500Mi
-```
 
 ---
 
