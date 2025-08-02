@@ -107,6 +107,7 @@ spec:
 > 🧠 **Tip:** Use `kubectl describe svc <service-name>` to inspect the service and verify connectivity.
 
 
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -123,4 +124,21 @@ spec:
     - name: http
       port: 80
       targetPort: 8080
+```
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-svc
+  namespace: db
+spec:
+  type: NodePort
+  ports:
+    - name: sql
+      port: 3306
+      targetPort: 3306
+      nodePort: 30000
+  selector:
+    app: db
 ```
