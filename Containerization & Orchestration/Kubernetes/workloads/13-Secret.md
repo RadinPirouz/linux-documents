@@ -43,7 +43,7 @@ kind: Secret
 metadata:
   name: db-pass
 type: Opaque
-data:
+stringData:
   password: '123'
 ```
 
